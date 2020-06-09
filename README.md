@@ -3,28 +3,41 @@
 
 ## React client application routes
 
-- Route `/`: page content and purpose
-- Route `/something/:param`: page content and purpose, param specification
-- ...
+- Route `/catalogue`: is the pages that appears to unathentcated users to browse available vehicles
+- Route `/login`: contains the login form in order to authenticate a user
+- Route `/user/book`: is the page where an authenticated user can select the parameters of a new rental
+- Route `/user/pay`: is the page where the user, after having choose the rental's parameters, pays the service
+- Route `/user/rentals`: is the page where a user can see past and future rentals, and eventually delete the future ones
+
 
 ## REST API server
 
 - POST `/login`
   - request parameters and request body content
   - response body content
-- GET `/api/something`
-  - request parameters
-  - response body content
-- POST `/api/something`
-  - request parameters and request body content
-  - response body content
-- ...
+- GET `/api/vehicles`
+  - request parameters: none
+  - response body content: an array of objects, each ones containing the vehicle's characteristics
+- GET `/api/available`
+  - TODO
+- POST `/api/rentals`
+  - request body content: an object containing all the rental parameters
+  - response body content: none
+- DELETE `api/rentals/:rentalId`
+  - reqest parameter `rentalId` is the id of the rental in the database
+  - response body content: none
 
 ## Server database
 
-- Table `users` - contains xx yy zz
-- Table `something` - contains ww qq ss
-- ...
+- Table `users` :
+  | UserId | Name | Surname | Username | Password |
+  | --- | --- | --- | --- | --- |
+- Table `Vehicles` :
+  |VehicleId | Category | Brand | Model |
+  | --- | --- | --- | --- |
+- Table `Rentals` :
+  |RentalId | VehicleId | UserId | DateFrom | DateTo | AgeDriver | OtherDrivers | Kilometers | Insurance | Price |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
 
 ## Main React Components
 
