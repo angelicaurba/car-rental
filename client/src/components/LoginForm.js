@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, Col, Container, Form, Row} from 'react-bootstrap';
 
 
-function LoginForm() {
+function LoginForm(props) {
+    const [submitted, setSubmitted] = useState(false);
+
     return <Container id="loginContainer" className={"jumbotron"}>
         <Form>
             <Form.Group><h5>Write your credentials</h5></Form.Group>
@@ -11,7 +13,7 @@ function LoginForm() {
                     Username
                 </Form.Label>
                 <Col sm={10}>
-                    <Form.Control type="username" placeholder="Username"/>
+                    <Form.Control name="username" onChange={(event) => props.change(event.target.name, event.target.value)} type="username" placeholder="Username" value = {props.username} required/>
                 </Col>
             </Form.Group>
 
@@ -20,7 +22,7 @@ function LoginForm() {
                     Password
                 </Form.Label>
                 <Col sm={10}>
-                    <Form.Control type="password" placeholder="Password"/>
+                    <Form.Control name="password"  onChange={(event) => props.change(event.target.name, event.target.value)} type="password" placeholder="Password" value = {props.password} required/>
                 </Col>
             </Form.Group>
             <Button variant="primary" type="submit" block>
