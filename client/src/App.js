@@ -1,26 +1,32 @@
 import React from 'react';
-import logo from './logo.svg';
+import {BrowserRouter as Router, Switch, Route, Link, Redirect} from 'react-router-dom';
+import AppNavbar from './components/AppNavbar'
+import Catalogue from './components/Catalogue'
+
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {loggedIn : false};
+    }
+    render() {
+        return (
+            <div className="App">
+                <Router>
+                    <Route path={"/"} render={()=><AppNavbar loggedIn={this.state.loggedIn}/>}/>
+                        <Switch>
+                        <Route exact path={"/catalogue"} render={()=>{
+                            if(this.state.loggedIn === false)
+                                return <Catalogue></Catalogue>;
+                            else return <Redirect to={"/user/newrental"}></Redirect>
+                        }}></Route>
+                        <Route exact to={"/login"}></Route>
+                    </Switch>
+                </Router>
+            </div>
+        );
+    }
 }
 
 export default App;
