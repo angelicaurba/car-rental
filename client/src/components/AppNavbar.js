@@ -13,40 +13,49 @@ function AppNavbar(props) {
                 <span className={"col-3"}>{logo}</span>
                 <span className={"col-7"}>Rentals.com</span>
             </Navbar.Brand>
-            <span className={"col-3 d-md-inline d-none"}><h6>Welcome User!</h6></span>
-            {location.pathname.endsWith("newrental") ?
-                <Link to={"/user/rentals"} className={"col-2"}>
-                    <Button className={"row"} variant="outline-light">
-                        <FaCarSide className={"col-4"}/>
-                        <span className={"col-6"}>Your rentals</span>
-                    </Button>
-                </Link>
-                : null
+            {props.loggedIn === true && !location.pathname.endsWith("/login") ?
+                <span className={"col-3 d-md-inline d-none"}><h6>Welcome User!</h6></span>
+                :
+                null
             }
-            {(location.pathname.endsWith("rentals")) ?
-                <Link to={"/user/newrental"} className={"col-2 col-sm-3 col-md-2.5"}>
-                    <Button className={"row"} variant="outline-light">
-                        <FaCarSide className={"col-12 col-md-4"}/>
-                        <span className={"col-4 d-sm-inline d-none"}>Rent a car</span>
-                    </Button>
-                </Link>
-                : <></>
-            }
+            <div className={"col-6 col-md-5 row"}>
+                {location.pathname.endsWith("newrental") ?
+                    <Link to={"/user/rentals"} className={"col-6"}>
+                        <Button className={"row"} variant="outline-light">
+                            <FaCarSide className={"col-12"}/>
+                            <span className={"col-12 d-sm-inline d-none"}>Your rentals</span>
+                        </Button>
+                    </Link>
+                    :
+                    (location.pathname.endsWith("rentals")) ?
+                        <Link to={"/user/newrental"} className={"col-6"}>
+                            <Button className={"row"} variant="outline-light">
+                                <FaCarSide className={"col-12"}/>
+                                <span className={"col-12 d-sm-inline d-none"}>Rent a car</span>
+                            </Button>
+                        </Link>
+                        :
+                        null
+                }
             {props.loggedIn === true ?
-                <Link to={"/login"} className={"col-2 col-sm-3 col-md-2"}>
+                <Link to={"/login"} className={"col-5 col-md-4 ml-2"}>
                     <Button className={"row"} variant="outline-light">
-                        <FaUserAltSlash className={"col-12 col-sm-5"}/>
+                        <FaUserAltSlash className={"col-12"}/>
                         <span className={"col-6 d-sm-inline d-none"}>Logout</span>
                     </Button>
                 </Link>
                 :
-                <Link to={"/login"} className={"col-2 col-sm-3 col-md-2"}>
-                    <Button className={"row"} variant="outline-light">
-                        <FaRegUser className={"col-12 col-sm-5"}/>
-                        <span className={"col-6 d-sm-inline d-none"}>Login</span>
-                    </Button>
-                </Link>
+                props.loggedIn === false && location.pathname.endsWith("/login") ?
+                    null
+                    :
+                    <Link to={"/login"} className={"col-5 col-md-4 ml-2"}>
+                        <Button className={"row"} variant="outline-light">
+                            <FaRegUser className={"col-12"}/>
+                            <span className={"col-6 d-sm-inline d-none"}>Login</span>
+                        </Button>
+                    </Link>
             }
+            </div>
         </Navbar>;
     }
 
