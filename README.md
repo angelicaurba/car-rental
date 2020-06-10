@@ -5,7 +5,7 @@
 
 - Route `/catalogue`: is the pages that appears to unathentcated users to browse available vehicles
 - Route `/login`: contains the login form in order to authenticate a user
-- Route `/user/book`: is the page where an authenticated user can select the parameters of a new rental
+- Route `/user/newrental`: is the page where an authenticated user can select the parameters of a new rental
 - Route `/user/pay`: is the page where the user, after having choose the rental's parameters, pays the service
 - Route `/user/rentals`: is the page where a user can see past and future rentals, and eventually delete the future ones
 
