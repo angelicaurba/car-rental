@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Switch, Route, Link, Redirect} from 'react-rout
 import AppNavbar from './components/AppNavbar'
 import Catalogue from './components/Catalogue'
 import LoginForm from "./components/LoginForm";
+import * as API from "./api/API.js";
 import './App.css';
 
 class App extends React.Component{
@@ -25,18 +26,36 @@ class App extends React.Component{
         });
     }
 
+    setLogin = () => {this.setState({loggedIn: true})}
+    setLogout = () => {this.setState({loggedIn: false})}
+
+    login = (username, password) => {
+        API.login(username, password)
+            .then((response) => {
+                if(response.name){
+                    this.setState((state) => {
+                        let tmp = {...state.user};
+                        tmp.name = response.name;
+                        return {user: tmp, loggedIn: true};
+                    });
+                    return true;
+                }
+            })
+            .catch(() => false);
+    }
+
     render() {
         return (
             <div className="App">
                 <Router>
-                    <Route path={"/"} render={()=><AppNavbar loggedIn={this.state.loggedIn}/>}/>
+                    <Route path={"/"} render={()=><AppNavbar setLogout={this.setLogout} loggedIn={this.state.loggedIn}/>}/>
                         <Switch>
                             <Route exact path={"/login"} render={()=>{
                                 if(this.state.loggedIn === false)
-                                    return <LoginForm change={this.changeUserField} username={this.state.username} password={this.state.password}/>;
+                                    return <LoginForm login={this.login} setLogin={this.setLogin} change={this.changeUserField} username={this.state.user.username} password={this.state.user.password}/>;
                                 else return <Redirect to={"/user/newrental"}></Redirect>
                             }}/>
-                        <Route exact path={"/catalogue"} render={()=>{
+                        <Route exact path={"/user/catalogue"} render={()=>{
                             if(this.state.loggedIn === false)
                                 return <Catalogue></Catalogue>;
                             else return <Redirect to={"/user/newrental"}></Redirect>
