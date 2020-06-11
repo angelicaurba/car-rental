@@ -38,8 +38,8 @@ function AppNavbar(props) {
                         null
                 }
             {props.loggedIn === true ?
-                <Link to={"/login"} className={"col-5 col-md-4 ml-2"}>
-                    <Button className={"row"} variant="outline-light">
+                <Link to={"/"} className={"col-5 col-md-4 ml-2"}>
+                    <Button className={"row"} variant="outline-light" onClick={()=>props.setLogout()}>
                         <FaUserAltSlash className={"col-12"}/>
                         <span className={"col-6 d-sm-inline d-none"}>Logout</span>
                     </Button>
