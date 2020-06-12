@@ -1,4 +1,4 @@
-
+import Vehicle from "./Vehicle";
 
 async function tryLogin(){
     return new Promise((resolve, reject) => {
@@ -19,7 +19,6 @@ async function tryLogin(){
 }
 
 async function login(username, password){
-    console.log("login API username + password "+ username + " + " + password);
     return new Promise((resolve, reject) => {
         fetch("/api/login", {
             method: 'POST',
@@ -39,4 +38,22 @@ async function login(username, password){
     });
 }
 
-export {tryLogin, login}
+function logout(){
+    fetch("/api/logout", { method: 'POST'});
+}
+
+async function getAllVehicles(){
+    const response = await fetch("/api/vehicles");
+    let vehicles = await response.json();
+
+    if(response.ok){
+        return vehicles.map(v => new Vehicle(v.id, v.category, v.brand, v.model, v.price));
+    }
+    else{
+        let retErr = {status: response.status, err: vehicles};
+        throw retErr;
+    }
+
+}
+
+export {tryLogin, login, logout, getAllVehicles}
