@@ -42,4 +42,9 @@
   width: 45vw;
   margin-top: 10vh;
   padding-top: 30px;
+  padding-bottom: 40px;
+}
+
+#underLogin{
+  margin-top: 30px;
 }
