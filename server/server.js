@@ -63,6 +63,10 @@ app.post("/api/login", (req, res) => {
             res.status(401).end();});
 });
 
+app.post("/api/logout", (req, res) =>{
+    res.clearCookie('token').end();
+});
+
 app.get("/api/vehicles", (req, res) => {
     vehicleDao.getAllVehicles()
         .then((vehicles) => res.json(vehicles))
