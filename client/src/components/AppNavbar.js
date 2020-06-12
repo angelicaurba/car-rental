@@ -14,7 +14,7 @@ function AppNavbar(props) {
                 <span className={"col-7"}>Rentals.com</span>
             </Navbar.Brand>
             {props.loggedIn === true && !location.pathname.endsWith("/login") ?
-                <span className={"col-3 d-md-inline d-none"}><h6>Welcome User!</h6></span>
+                <span className={"col-3 d-md-inline d-none"}><h6>Welcome {props.name}!</h6></span>
                 :
                 null
             }

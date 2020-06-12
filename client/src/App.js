@@ -48,7 +48,7 @@ class App extends React.Component{
         return (
             <div className="App">
                 <Router>
-                    <Route path={"/"} render={()=><AppNavbar setLogout={this.setLogout} loggedIn={this.state.loggedIn}/>}/>
+                    <Route path={"/"} render={()=><AppNavbar setLogout={this.setLogout} name={this.state.user.name} loggedIn={this.state.loggedIn}/>}/>
                         <Switch>
                             <Route exact path={"/login"} render={()=>{
                                 if(this.state.loggedIn === false)
@@ -56,10 +56,12 @@ class App extends React.Component{
                                 else return <Redirect to={"/user/newrental"}></Redirect>
                             }}/>
                         <Route exact path={"/user/catalogue"} render={()=>{
-                            if(this.state.loggedIn === false)
                                 return <Catalogue></Catalogue>;
-                            else return <Redirect to={"/user/newrental"}></Redirect>
                         }}/>
+                            <Route exact path={"/user/newrental"} render={()=>{
+                                if(this.state.loggedIn === false)
+                                    return <Redirect to={"/login"}></Redirect>;
+                            }}/>
                     </Switch>
                 </Router>
             </div>

@@ -33,7 +33,7 @@ app.get("/api/login", jwt({
     console.log("the user was already auth?");
     if(req.user && req.user.userId){
         console.log("UserId : " + req.user.userId);
-        user_dao.getNameById(req.user.userId)
+        userDao.getNameById(req.user.userId)
             .then((response) => res.status(200).json({name: response}).send())
             .catch(() => res.status(401).end() );
     }
