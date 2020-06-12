@@ -14,8 +14,16 @@ class App extends React.Component{
                         username: "",
                         password: "",
                         name: ""
-                    }
+                    },
+            loading: true,
+            vehicles: []
         };
+    }
+
+    componentDidMount() {
+        API.getAllVehicles()
+            .then((result) => this.setState({vehicles: [...result], loading: false}))
+            .catch(err => console.log(err));
     }
 
     changeUserField = (name,value) => {
@@ -27,14 +35,17 @@ class App extends React.Component{
     }
 
     setLogin = () => {this.setState({loggedIn: true})}
-    setLogout = () => {this.setState({loggedIn: false})}
+    setLogout = () => {
+        this.setState({loggedIn: false});
+        API.logout();
+    }
 
     login = (username, password) => {
-        API.login(username, password)
+        return API.login(username, password)
             .then((response) => {
                 if(response.name){
                     this.setState((state) => {
-                        let tmp = {...state.user};
+                        let tmp = {username: "", password: ""};
                         tmp.name = response.name;
                         return {user: tmp, loggedIn: true};
                     });
@@ -55,8 +66,8 @@ class App extends React.Component{
                                     return <LoginForm login={this.login} setLogin={this.setLogin} change={this.changeUserField} username={this.state.user.username} password={this.state.user.password}/>;
                                 else return <Redirect to={"/user/newrental"}></Redirect>
                             }}/>
-                        <Route exact path={"/user/catalogue"} render={()=>{
-                                return <Catalogue></Catalogue>;
+                        <Route exact path={"/catalogue"} render={()=>{
+                                return <Catalogue vehicles={this.state.vehicles}/>;
                         }}/>
                             <Route exact path={"/user/newrental"} render={()=>{
                                 if(this.state.loggedIn === false)
