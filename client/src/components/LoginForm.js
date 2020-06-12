@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Col, Container, Form, Row, Alert} from 'react-bootstrap';
+import {Button, Col, Container, Form, Row, Alert, Spinner} from 'react-bootstrap';
 import {Redirect} from 'react-router-dom';
 import * as API from "../api/API";
 
 
 function LoginForm(props) {
-    const [submitted, setSubmitted] = useState(false);
     const [err, setErr] = useState(false);
     const [loading, setLoading] = useState(false);
-    const errorMessage = "Your credentials may be uncorrect!"
+    const errorMessage = "Your credentials are not correct!"
     useEffect(() => {
         API.tryLogin()
             .then((response) => {
@@ -21,19 +20,14 @@ function LoginForm(props) {
         //the catch is void since no action must be done if the user was not already authenticated
     }, []);
 
-
-    return submitted ? <Redirect to={"/user/newrental"}/> :
-    <Container id="loginContainer" className={"jumbotron"}>
+    return <Container id="loginContainer" className={"jumbotron"}>
         <Form onSubmit={(event) => {
-            console.log("The form is valid?");
-            console.log("loginForm username + password "+ props.username + " + " + props.password);
             event.preventDefault();
             if (event.target.checkValidity()) {
-                console.log("The form is valid!");
-                if(props.login(props.username, props.password))
-                    setSubmitted(true);
-                else
-                    setErr(true);
+                setLoading(true);
+                (props.login(props.username, props.password))
+                    .then((response) => {if(!response){setLoading(false); setErr(true);}})
+                    .catch(() => {setLoading(false); setErr(true);});
             } else
                 event.target.reportValidity();
         }}>
@@ -64,17 +58,19 @@ function LoginForm(props) {
                     Login
                 </Button>
             </Form>
+        <Container id="underLogin">
             {(loading === true)?
-                <Spinner animation="border" role="status">
+                <Spinner animation="border" role="status" >
                     <span className="sr-only">Loading...</span>
                 </Spinner>
                 :
                 (err === true) ?
-                <Alert variant={"danger"}>
+                <Alert variant={"danger"} >
                     {errorMessage}
                 </Alert>
                 :
                 null}
+        </Container>
         </Container>
 }
 
