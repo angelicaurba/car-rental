@@ -12,6 +12,7 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 
 const userDao = require('./user_dao');
+const vehicleDao = require('./vehicle_dao');
 
 // Set-up logging
 app.use(morgan('tiny'));
@@ -53,6 +54,8 @@ app.post("/api/login", (req, res) => {
                 res.cookie('token', token, {httpOnly: true, sameSite: true, maxAge: expireTime});
                 res.status(200).json({name: user.name}).send();
             }
+            else
+            res.status(401).end();
         })
         .catch((err) => {
             console.log("POST api login");
@@ -60,13 +63,17 @@ app.post("/api/login", (req, res) => {
             res.status(401).end();});
 });
 
-/*
+app.get("/api/vehicles", (req, res) => {
+    vehicleDao.getAllVehicles()
+        .then((vehicles) => res.json(vehicles))
+        .catch((err) => res.status(500).json({error: err}));
+});
 
 app.use(jwt({
     secret: jwtSecret,
     getToken: req => req.cookies.token
 }));
-*/
+
 
 
 app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}/`));
