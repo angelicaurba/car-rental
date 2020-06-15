@@ -48,3 +48,12 @@
 #underLogin{
   margin-top: 30px;
 }
+
+.form-check label{
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  bottom: 1px;
+}
+
