@@ -1,6 +1,10 @@
-import React, {useState} from 'react';
-import {Col, Container, Form, FormControl, FormGroup, FormLabel, Row} from "react-bootstrap";
+import React from 'react';
+import {Alert, Container} from "react-bootstrap";
 import {Route, Switch} from 'react-router-dom';
+import RentalForm from './RentalForm';
+import moment from 'moment';
+import NumberAndPriceRequest from "../api/NumberAndPriceRequest";
+import * as api from '../api/API';
 
 
 class UserArea extends React.Component {
@@ -8,13 +12,19 @@ class UserArea extends React.Component {
         super(props);
         this.state = {
             formData: {
-                category: "",
-                datain: "",
-                dataout: "",
-                extradrivers: "",
-                driverage: "",
-                kms: "",
-                extrainsurance: 0
+                category: "-1",
+                datein: "",
+                dateout: "",
+                extradrivers: 0,
+                driverage: -1,
+                kms: -1,
+                extrainsurance: false
+            }
+            , numberAndPrice: {
+                arrived: false,
+                isValid: false,
+                number: -1,
+                price: -1
             }
         }
     }
@@ -27,9 +37,56 @@ class UserArea extends React.Component {
         });
     }
 
+    checkValues = (datein, dateout, category, age, others, kms, insurance) => {
+        if (datein && dateout && moment(datein).isAfter(moment()) && moment(datein).isSameOrBefore(dateout)) { //dates ok
+            let regexCat = new RegExp("[A-E]");
+            if (regexCat.test(category) && +kms !== -1 && +age !== -1) { //category, kms and age ok
+                return new NumberAndPriceRequest(datein, dateout, category, +age, +others, +kms, insurance ? 1 : 0);
+            }
+        }
+        return false;
+    }
+
+    retrieveNumberAndPrice = (request) => {
+        api.retrieveNumberAndPrice(request)
+            .then((result) => {
+                console.log(result);
+                this.setState({
+                numberAndPrice: {
+                    isValid: true,
+                    number: result.number,
+                    price: result.price
+                }
+            });})
+            .catch((result) => {
+                console.log(result);
+                this.setState({
+                    numberAndPrice: {
+                        isValid: false,
+                        number: -1,
+                        price: -1
+                    }
+                });
+            });
+    }
+
+    resultArrived = (arrived) => {
+        this.setState((state) => {
+            let tmp = {...state.numberAndPrice};
+            tmp.arrived = arrived;
+            return {numberAndPrice: tmp};
+        })
+    }
+
     render() {
         return <Switch>
-            <Route exact path={"/user/newrental"} render={() => <RentalForm formData={this.state.formData}/>}/>
+            <Route exact path={"/user/newrental"}
+                   render={() => <Container className={"rentalForm jumbotron"}><RentalForm
+                       resultArrived={this.resultArrived} checkValues={this.checkValues}
+                       changeFormData={this.changeFormData} retrieveNumberAndPrice={this.retrieveNumberAndPrice}
+                       formData={this.state.formData}/>
+                       <NumberAndPrice numberAndPrice={this.state.numberAndPrice}/>
+                   </Container>}/>
             <Route exact path={"/user/rentals"} render={() => <Rentals/>}/>
         </Switch>
     }
@@ -37,62 +94,30 @@ class UserArea extends React.Component {
 }
 
 
-function RentalForm(props) {
-    const [submitted, setSubmitted] = useState(false);
-    return <Container className={"rentalForm jumbotron"}>
-        <h3 className={"formTitle"}>Rent your car now!</h3>
-        <Form className={"text-left"}>
-            <Row>
-                <Col sm={6}>
-                    <FormGroup as={Row}>
-                        <FormLabel column sm={3}>From:</FormLabel>
-                        <Col sm={9}>
-                            <FormControl type={"date"} required readOnly={submitted} value={props.formData.datain}/>
-                        </Col>
-                    </FormGroup>
-                </Col>
-                <Col sm={6}>
-                    <FormGroup as={Row}>
-                        <FormLabel column sm={3}>To:</FormLabel>
-                        <Col sm={9}>
-                            <FormControl type={"date"} required readOnly={submitted} value={props.formData.dataout}/>
-                        </Col>
-                    </FormGroup>
-                </Col>
-            </Row>
-            <Row>
-                <Col sm={5}>
-                    <FormGroup>
-                        <FormLabel>Select the category</FormLabel>
-                        <Form.Control as="select" defaultValue={props.formData.category}>
-                            <option>A</option>
-                            <option>B</option>
-                            <option>C</option>
-                            <option>D</option>
-                            <option>E</option>
-                        </Form.Control>
-                    </FormGroup>
-                </Col>
-                <Col sm={4}>
-                    <FormGroup>
-                        <FormLabel>Kilometers:</FormLabel>
-                        <Form.Control as="select" disabled={props.formData.kms === -1} defaultValue={props.formData.kms}>
-                            <option>{"< 50 km/day"}</option>
-                            <option>{"50-150 km/day"}</option>
-                            <option>{"> 150 km/day"}</option>
-                        </Form.Control>
-                    </FormGroup>
-                </Col>
-                <Col sm={3}>
-                    <Form.Check  label="Unlimited" type={'checkbox'} defaultChecked = {props.formData.kms === -1} onChange={(event) => {}}/>
-                </Col>
-            </Row>
-        </Form>
-    </Container>;
-}
-
 function Rentals(props) {
     return <></>;
+}
+
+function NumberAndPrice(props){
+    if(!props.numberAndPrice.arrived)
+        return null;
+    else{
+        if(!props.numberAndPrice.isValid || props.numberAndPrice.number === 0){
+            return <Alert variant={"danger"}>
+                {!props.numberAndPrice.isValid ? "Oops! Something went wrong, try again later!"
+                    :
+                    "There are no cars available for the choosen period and category, try another rental period or change the category!"
+                }
+            </Alert>
+        }
+        else if(props.numberAndPrice.isValid && props.numberAndPrice.number > 0)
+            return <Alert variant={"success"}>{
+                    "There are only "+props.numberAndPrice.number+" cars available for the choosen period and category! " +
+                    "Book yours now for "+props.numberAndPrice.number+"!"
+                }
+            </Alert>
+    }
+
 }
 
 export default UserArea
