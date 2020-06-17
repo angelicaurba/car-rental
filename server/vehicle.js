@@ -14,6 +14,7 @@ class Vehicle {
             case "E": this.price = 40; break;
         }
     }
+
 }
 
 module.exports = Vehicle;

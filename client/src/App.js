@@ -3,13 +3,14 @@ import {BrowserRouter as Router, Switch, Route, Link, Redirect} from 'react-rout
 import AppNavbar from './components/AppNavbar'
 import Catalogue from './components/Catalogue'
 import LoginForm from "./components/LoginForm";
+import UserArea from "./components/UserArea";
 import * as API from "./api/API.js";
 import './App.css';
 
 class App extends React.Component{
     constructor(props){
         super(props);
-        this.state = {loggedIn : false,
+        this.state = {loggedIn : true,
                     user:{
                         username: "",
                         password: "",
@@ -66,13 +67,16 @@ class App extends React.Component{
                                     return <LoginForm login={this.login} setLogin={this.setLogin} change={this.changeUserField} username={this.state.user.username} password={this.state.user.password}/>;
                                 else return <Redirect to={"/user/newrental"}></Redirect>
                             }}/>
-                        <Route exact path={"/catalogue"} render={()=>{
+                            <Route exact path={"/catalogue"} render={()=>{
                                 return <Catalogue vehicles={this.state.vehicles}/>;
-                        }}/>
-                            <Route exact path={"/user/newrental"} render={()=>{
+                            }}/>
+                            <Route path={"/user/"} render={()=>{
                                 if(this.state.loggedIn === false)
                                     return <Redirect to={"/login"}></Redirect>;
+                                else
+                                    return <UserArea/>
                             }}/>
+                            <Route path={"/"} render={() => <Redirect to={"/catalogue"}></Redirect>}/>
                     </Switch>
                 </Router>
             </div>

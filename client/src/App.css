@@ -49,6 +49,10 @@
   margin-top: 30px;
 }
 
+#underRentalForm{
+  margin-top: 30px;
+}
+
 .form-check label{
   position: relative;
   display: inline-block;
@@ -57,3 +61,26 @@
   bottom: 1px;
 }
 
+.price{
+  padding-top: 15px;
+}
+
+.category{
+  padding-top: 15px;
+}
+
+.price .display-4{
+  color: green;
+}
+
+body{
+  background-color: dimgray;
+}
+
+.formTitle{
+  padding-bottom: 30px;
+}
+
+.rentalForm{
+  width: 80vw;
+}

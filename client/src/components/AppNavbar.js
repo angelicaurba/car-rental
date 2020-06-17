@@ -21,25 +21,25 @@ function AppNavbar(props) {
             }
             <div className={"col-6 col-md-5 row"}>
                 {location.pathname.endsWith("newrental") ?
-                    <Link to={"/user/rentals"} className={"col-6"}>
+                    <Link to={"/user/rentals"} className={"col-6 col-lg-5"}>
                         <Button className={"row"} variant="outline-light">
                             <FaCarSide className={"col-12"}/>
-                            <span className={"col-12 d-sm-inline d-none"}>Your rentals</span>
+                            <span className={"col-12 d-sm-block d-none"}>Your rentals</span>
                         </Button>
                     </Link>
                     :
                     (location.pathname.endsWith("rentals")) ?
-                        <Link to={"/user/newrental"} className={"col-6"}>
+                        <Link to={"/user/newrental"} className={"col-6 col-lg-5"}>
                             <Button className={"row"} variant="outline-light">
                                 <FaCarSide className={"col-12"}/>
-                                <span className={"col-12 d-sm-inline d-none"}>Rent a car</span>
+                                <span className={"col-12 d-sm-block d-none"}>Rent a car</span>
                             </Button>
                         </Link>
                         :
                         null
                 }
             {props.loggedIn === true ?
-                <Link to={"/"} className={"col-6 col-md-4 ml-2"}>
+                <Link to={"/"} className={"col-5 col-md-4 ml-2"}>
                     <Button className={"row"} variant="outline-light" onClick={()=>props.setLogout()}>
                         <FaUserAltSlash className={"col-12"}/>
                         <span className={"col-6 d-sm-inline d-none"}>Logout</span>
@@ -49,7 +49,7 @@ function AppNavbar(props) {
                 props.loggedIn === false && location.pathname.endsWith("/login") ?
                     null
                     :
-                    <Link to={"/login"} className={"col-6 col-md-4 ml-2"}>
+                    <Link to={"/login"} className={"col-5 col-md-4 ml-2"}>
                         <Button className={"row"} variant="outline-light">
                             <FaRegUser className={"col-12"}/>
                             <span className={"col-6 d-sm-inline d-none"}>Login</span>

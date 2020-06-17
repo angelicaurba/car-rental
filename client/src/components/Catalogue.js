@@ -1,5 +1,5 @@
 import React from 'react';
-import {Col, Form, Image, ListGroup, Row, Card} from "react-bootstrap";
+import {Col, Form, Image, ListGroup, Row, Card, Button} from "react-bootstrap";
 import {FaFilter} from 'react-icons/fa';
 
 
@@ -83,17 +83,17 @@ function VehiclesList(props) {
 }
 
 function VehicleRow(props) {
-    return <ListGroup.Item><Row className={"vehicleRow"}>
+    return <ListGroup.Item style={{ borderWidth: '3px', backgroundColor: 'aliceblue'}}><Row className={"vehicleRow"}>
         <Col sm={4}>
             <Image className={"img-fluid"} src="img/prova.png" rounded thumbnail/>
         </Col>
-        <Col sm={4}>
-            <small className={"d-block"}>From</small>
-            <span className={"d-inline"}><h1 className="display-4 d-inline">{props.vehicle.price*(1-5/100)*(1-10/100)}€</h1><small>/day</small></span>
+        <Col sm={5} className={"price"}>
+            <small className={"d-block"}>Starting from</small>
+            <span className={"d-inline"}><h1 className="display-4 d-inline">{(props.vehicle.price*(1-5/100)*(1-10/100)).toFixed(2)}€</h1><small className={"d-inline"}>/day</small></span>
         </Col>
-        <Col sm={4}>
-            Category: {props.vehicle.category}
-            {props.vehicle.brand} {props.vehicle.model}
+        <Col sm={3} className={"category"}>
+            <h5 className={"d-block"}>{props.vehicle.brand} {props.vehicle.model}</h5>
+            <h6 className={"d-block"}>Category <Button disabled variant="danger">{props.vehicle.category}</Button></h6>
         </Col>
     </Row></ListGroup.Item>;
 }
