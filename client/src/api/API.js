@@ -46,7 +46,7 @@ async function getAllVehicles(){
     const response = await fetch("/api/vehicles");
     let vehicles = await response.json();
 
-    if(response.ok){
+    if(response.ok && response.status === 200){
         return vehicles.map(v => new Vehicle(v.id, v.category, v.brand, v.model, v.price));
     }
     else{
@@ -56,4 +56,21 @@ async function getAllVehicles(){
 
 }
 
-export {tryLogin, login, logout, getAllVehicles}
+async function retrieveNumberAndPrice(request){
+    const url = '/api/vehicles/request?'+ Object.entries(request)
+        .map(pair => pair.map(encodeURIComponent).join('='))
+        .join('&');
+    console.log(url);
+    const response = await fetch(url, {
+            method: 'GET'});
+    const numberAndPrice = await response.json();
+    if(response.ok && response.status === 200){
+        return numberAndPrice;
+    }
+    else{
+        let retErr = {status: response.status, err: numberAndPrice};
+        throw retErr;
+    }
+}
+
+export {tryLogin, login, logout, getAllVehicles, retrieveNumberAndPrice}
