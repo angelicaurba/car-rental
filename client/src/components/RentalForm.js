@@ -4,7 +4,6 @@ import {Alert, Col, Container, Form, FormControl, FormGroup, FormLabel, Row, Spi
 
 
 function RentalForm(props) {
-    const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [err, setErr] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -23,11 +22,9 @@ function RentalForm(props) {
                 setErr(false);
                 let request = props.checkValues(props.formData.datein, props.formData.dateout, props.formData.category, props.formData.driverage, props.formData.extradrivers, props.formData.kms, props.formData.extrainsurance);
                 if (request) {
-                    props.resultArrived(false);
                     setLoading(true);
                     props.retrieveNumberAndPrice(request);
                     setLoading(false);
-                    props.resultArrived(true);
                 }
             }
         }
@@ -41,7 +38,7 @@ function RentalForm(props) {
                     <FormGroup as={Row}>
                         <FormLabel column sm={3}>From:</FormLabel>
                         <Col sm={9}>
-                            <FormControl type={"date"} required readOnly={submitted}
+                            <FormControl type={"date"} required readOnly={props.submitted}
                                          defaultValue={props.formData.datein} name={"datein"} onChange={(event) => {
                                 props.changeFormData(event.target.name, event.target.value)
                             }}/>
@@ -52,7 +49,7 @@ function RentalForm(props) {
                     <FormGroup as={Row}>
                         <FormLabel column sm={3}>To:</FormLabel>
                         <Col sm={9}>
-                            <FormControl type={"date"} required readOnly={submitted}
+                            <FormControl type={"date"} required readOnly={props.submitted}
                                          defaultValue={props.formData.dateout} name={"dateout"} onChange={(event) => {
                                 props.changeFormData(event.target.name, event.target.value)
                             }}/>
@@ -65,7 +62,7 @@ function RentalForm(props) {
                     <FormGroup as={Row}>
                         <FormLabel column sm={3} md={6}>Car's category</FormLabel>
                         <Col sm={6}>
-                            <Form.Control as="select" readOnly={submitted} defaultValue={props.formData.category}
+                            <Form.Control as="select" readOnly={props.submitted} defaultValue={props.formData.category}
                                           name={"category"} onChange={(event) => {
                                 props.changeFormData(event.target.name, event.target.value)
                             }}>
@@ -83,7 +80,7 @@ function RentalForm(props) {
                     <FormGroup as={Row}>
                         <FormLabel column sm={3} md={6}>Kilometers</FormLabel>
                         <Col sm={6}>
-                            <Form.Control type={"number"} readOnly={submitted} as="select"
+                            <Form.Control type={"number"} readOnly={props.submitted} as="select"
                                           defaultValue={props.formData.kms} name={"kms"} onChange={(event) => {
                                 props.changeFormData(event.target.name, event.target.value)
                             }}>
@@ -101,7 +98,7 @@ function RentalForm(props) {
                     <FormGroup as={Row}>
                         <FormLabel column sm={3} md={6}>Driver's age</FormLabel>
                         <Col sm={6}>
-                            <Form.Control type={"number"} as="select" readOnly={submitted}
+                            <Form.Control type={"number"} as="select" readOnly={props.submitted}
                                           defaultValue={props.formData.driverage} name={"driverage"}
                                           onChange={(event) => {
                                               props.changeFormData(event.target.name, event.target.value)
@@ -118,7 +115,7 @@ function RentalForm(props) {
                     <FormGroup as={Row}>
                         <FormLabel column sm={3} md={6}>Extra drivers</FormLabel>
                         <Col sm={6}>
-                            <Form.Control type={"number"} readOnly={submitted}
+                            <Form.Control type={"number"} readOnly={props.submitted} min={0}
                                           defaultValue={props.formData.extradrivers} name={"extradrivers"}
                                           onChange={(event) => {
                                               props.changeFormData(event.target.name, event.target.value);
@@ -128,7 +125,7 @@ function RentalForm(props) {
                 </Col>
             </Row>
             <div className="custom-control custom-checkbox">
-                <input type="checkbox" className="custom-control-input" id="defaultChecked2" disabled={submitted}
+                <input type="checkbox" className="custom-control-input" id="defaultChecked2" disabled={props.submitted}
                        checked={props.formData.extrainsurance === true} onChange={(event) => {
                     props.changeFormData("extrainsurance", event.target.checked)
                 }}/>
