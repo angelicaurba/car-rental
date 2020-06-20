@@ -14,7 +14,7 @@ function AppNavbar(props) {
                 <Image src={logo} className={"col-6"} height={50} rounded/>
                 <span className={"col-5"}>Rentals.com</span>
             </Navbar.Brand>
-            {props.loggedIn === true && !location.pathname.endsWith("/login") ?
+            {props.loggedIn === true && !location.pathname.endsWith("/login") && props.name ?
                 <span className={"col-3 d-md-inline d-none"}><h6>Welcome {props.name}!</h6></span>
                 :
                 null

@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Col, Container, Form, Row, Alert, Spinner} from 'react-bootstrap';
-import {Redirect} from 'react-router-dom';
+import {Alert, Button, Col, Container, Form, Row, Spinner} from 'react-bootstrap';
 import * as API from "../api/API";
 
 
@@ -11,12 +10,13 @@ function LoginForm(props) {
     useEffect(() => {
         API.tryLogin()
             .then((response) => {
-                if(response.name){
+                if (response.name) {
                     props.change("name", response.name);
                     props.setLogin();
                 }
             })
-            .catch(() => {});
+            .catch(() => {
+            });
         //the catch is void since no action must be done if the user was not already authenticated
     }, []);
 
@@ -26,52 +26,58 @@ function LoginForm(props) {
             if (event.target.checkValidity()) {
                 setLoading(true);
                 (props.login(props.username, props.password))
-                    .then((response) => {if(!response){setLoading(false); setErr(true);}})
-                    .catch(() => {setLoading(false); setErr(true);});
+                    .then((response) => {
+                        if (!response) {
+                            setLoading(false);
+                            setErr(true);
+                        }
+                    })
+                    .catch(() => {
+                        setLoading(false);
+                        setErr(true);
+                    });
             } else
                 event.target.reportValidity();
         }}>
 
-                <Form.Group><h5>Write your credentials</h5></Form.Group>
-                <Form.Group as={Row} controlId="formHorizontalEmail">
-                    <Form.Label column sm={2}>
-                        Username
-                    </Form.Label>
-                    <Col sm={10}>
-                        <Form.Control name="username"
-                                      onChange={(event) => props.change(event.target.name, event.target.value)}
-                                      type="username" placeholder="Username" value={props.username} required/>
-                    </Col>
-                </Form.Group>
+            <Form.Group><h5>Write your credentials</h5></Form.Group>
+            <Form.Group as={Row} controlId="formHorizontalEmail">
+                <Form.Label column sm={2}>
+                    Username
+                </Form.Label>
+                <Col sm={10}>
+                    <Form.Control name="username"
+                                  onChange={(event) => props.change(event.target.name, event.target.value)}
+                                  type="username" placeholder="Username" value={props.username} required/>
+                </Col>
+            </Form.Group>
 
-                <Form.Group as={Row} controlId="formHorizontalPassword">
-                    <Form.Label column sm={2}>
-                        Password
-                    </Form.Label>
-                    <Col sm={10}>
-                        <Form.Control name="password"
-                                      onChange={(event) => props.change(event.target.name, event.target.value)}
-                                      type="password" placeholder="Password" value={props.password} required/>
-                    </Col>
-                </Form.Group>
-                <Button variant="primary" type="submit" block>
-                    Login
-                </Button>
-            </Form>
+            <Form.Group as={Row} controlId="formHorizontalPassword">
+                <Form.Label column sm={2}>
+                    Password
+                </Form.Label>
+                <Col sm={10}>
+                    <Form.Control name="password"
+                                  onChange={(event) => props.change(event.target.name, event.target.value)}
+                                  type="password" placeholder="Password" value={props.password} required/>
+                </Col>
+            </Form.Group>
+            <Button variant="primary" type="submit" block>
+                Login
+            </Button>
+        </Form>
         <Container id="underLogin">
-            {(loading === true)?
-                <Spinner animation="border" role="status" >
-                    <span className="sr-only">Loading...</span>
-                </Spinner>
+            {(loading === true) ?
+                <Spinner animation="border" role="status" variant="secondary" />
                 :
                 (err === true) ?
-                <Alert variant={"danger"} >
-                    {errorMessage}
-                </Alert>
-                :
-                null}
+                    <Alert variant={"danger"}>
+                        {errorMessage}
+                    </Alert>
+                    :
+                    null}
         </Container>
-        </Container>
+    </Container>
 }
 
 export default LoginForm;
