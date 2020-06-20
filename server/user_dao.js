@@ -10,7 +10,7 @@ exports.getNameById = function(id){
                 reject(err);
                 return;
             }
-            resolve(row);
+            resolve(row.Name);
         })
     });
 }
