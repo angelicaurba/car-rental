@@ -10,7 +10,7 @@ import './App.css';
 class App extends React.Component{
     constructor(props){
         super(props);
-        this.state = {loggedIn : true,
+        this.state = {loggedIn : false,
                     user:{
                         username: "",
                         password: "",
@@ -58,10 +58,10 @@ class App extends React.Component{
 
     render() {
         return (
-            <div className="App">
+            <div className="App container-fluid">
                 <Router>
                     <Route path={"/"} render={()=><AppNavbar setLogout={this.setLogout} name={this.state.user.name} loggedIn={this.state.loggedIn}/>}/>
-                        <Switch>
+                    <Switch>
                             <Route exact path={"/login"} render={()=>{
                                 if(this.state.loggedIn === false)
                                     return <LoginForm login={this.login} setLogin={this.setLogin} change={this.changeUserField} username={this.state.user.username} password={this.state.user.password}/>;

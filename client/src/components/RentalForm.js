@@ -106,7 +106,7 @@ function RentalForm(props) {
                                 <option value={-1}></option>
                                 <option value={1}>{"18 - 24"}</option>
                                 <option value={2}>{"25 - 64"}</option>
-                                <option value={3}>{"65 - "}</option>
+                                <option value={3}>{"65 + "}</option>
                             </Form.Control>
                         </Col>
                     </FormGroup>

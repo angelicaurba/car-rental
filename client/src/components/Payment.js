@@ -1,10 +1,11 @@
 import React from 'react';
-import PaymentCard from 'react-payment-card-component'
 import {Alert, Button, Form, FormControl, FormGroup, FormLabel, Spinner} from "react-bootstrap";
 import moment from "moment";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import Container from "react-bootstrap/Container";
+import Cards from 'react-credit-cards';
+import 'react-credit-cards/es/styles-compiled.css';
+import {Link} from 'react-router-dom';
 
 
 class Payment extends React.Component {
@@ -16,11 +17,10 @@ class Payment extends React.Component {
                 number: "",
                 month: "",
                 year: "",
-                name: "",
-                flipped: false
+                name: ""
             },
+            focused: "",
             loading: false,
-            submitted: false
         }
     }
 
@@ -32,88 +32,131 @@ class Payment extends React.Component {
         });
     }
 
+    changeFocus = (name) => {
+        this.setState({focused: name});
+    }
+
     isValidData = () => {
         const pattern = new RegExp("[0-9]+");
         if (pattern.test(this.state.paymentData.number) && this.state.paymentData.number.length === 16) //valid card number
             if (pattern.test(this.state.paymentData.cvv) && this.state.paymentData.cvv.length === 3) //valid cvv
                 if (pattern.test(this.state.paymentData.month) && +this.state.paymentData.month >= 1 && +this.state.paymentData.month <= 12) //valid month
                     if (pattern.test(this.state.paymentData.year) && +this.state.paymentData.year >= (moment().year() - 2000)) //valid year
-                        return true;
+                        if (pattern.test(this.state.paymentData.cvv) && this.state.paymentData.cvv.length === 3) //valid year
+                            return true;
         return false;
     }
 
     submitPayment = (form) => {
         if (form.checkValidity() && this.isValidData()) {
-            //this.setState({loading: true});
-            //api call
-            //if not ok
-            //this.setState({loading: false});
-            //and some error message
-            //else
-            //this.setState({submitted: true});
-            //show a message for successful payment
+            this.setState({loading: true});
+            this.props.handlePayment(this.state.paymentData);
+            this.setState({loading: false});
         }
         form.reportValidity();
     }
 
     render() {
-        if(this.state.submitted)
-            return <Alert variant={"success"}>
-                <Alert.Heading>Payment executed successfully!</Alert.Heading>
+        return (this.props.submitted && this.props.success) ?
+            <Alert variant={"success"}>
+                <Alert.Heading>Booking executed successfully!</Alert.Heading>
+                <hr/>
+                <Link to={"/user/rentals"}><Button variant={"primary"}>Check yuor rentals</Button> </Link>
             </Alert>
-        else
-        return <Container className={"jumbotron"}>
+            :
             <Row>
-                <Col md={5}>
-                    <PaymentCard
-                        bank="itau"
-                        model="personnalite"
-                        type="black"
-                        brand="mastercard"
+                <Col md={6}>
+                    <Cards
+                        acceptedCards={['visa', 'mastercard']}
+                        cvc={this.state.paymentData.cvv}
+                        expiry={(this.state.paymentData.month && this.state.paymentData.month <= 9 ? "0" : "") + this.state.paymentData.month + "/" + this.state.paymentData.year}
+                        focused={this.state.focused}
+                        name={this.state.paymentData.name}
                         number={this.state.paymentData.number}
-                        cvv={this.state.paymentData.cvv}
-                        holderName={this.state.paymentData.name}
-                        expiration={this.state.paymentData.month + "/" + this.state.paymentData.year}
-                        flipped={this.state.formData.flipped}
                     />
                 </Col>
-                <Col md={6}>
-                    <Form onSubmit={(event) => {event.preventDefault(); this.submitPayment(event.target);}}>
-                        <FormGroup>
-                            <FormControl type={"text"} placeholder={"Name"} name={"name"}
-                                         defaultValue={this.state.paymentData.name}
-                                         onChange={(event) => this.changeState(event.target.name, event.target.value)}
-                                         required/>
-                            <FormLabel>Name</FormLabel>
+                <Col sm={12} md={6} className={"mt-2"}>
+                    <Form className={"text-left"} onSubmit={(event) => {
+                        event.preventDefault();
+                        this.submitPayment(event.target);
+                        console.log("submit");
+                    }}>
+                        <FormGroup as={Row}>
+                            <Form.Label column sm={3}>Name</Form.Label>
+                            <Col sm={8}>
+                                <Form.Control type={"text"} placeholder={"Name"} name={"name"}
+                                              disabled={this.props.submitted && this.props.success}
+                                              value={this.state.paymentData.name}
+                                              onChange={(event) => this.changeState(event.target.name, event.target.value)}
+                                              onFocus={(event) => this.changeFocus(event.target.name)}
+                                              required/>
+                            </Col>
                         </FormGroup>
-                        <FormGroup>
-                            <FormControl type={"tel"} placeholder={"Card Number"} name={"number"}
-                                         defaultValue={this.state.paymentData.number}
-                                         onChange={(event) => this.changeState(event.target.name, event.target.value)}
-                                         required/>
-                            <FormLabel>Number</FormLabel>
+                        <FormGroup as={Row}>
+                            <FormLabel column sm={3}>Number</FormLabel>
+                            <Col sm={8}>
+                                <FormControl type={"tel"} placeholder={"Card Number"} name={"number"}
+                                             disabled={this.props.submitted && this.props.success}
+                                             maxLength={16}
+                                             value={this.state.paymentData.number}
+                                             onChange={(event) => this.changeState(event.target.name, event.target.value.toUpperCase())}
+                                             onFocus={(event) => this.changeFocus(event.target.name)}
+                                             required/>
+                            </Col>
                         </FormGroup>
-                        <FormGroup>
-                            <FormLabel>Expiration Date</FormLabel>
-                            <FormControl column={5} type={"number"} min={1} max={12} name={"month"}
-                                         defaultValue={this.state.paymentData.month}
-                                         onChange={(event) => this.changeState(event.target.name, event.target.value)}
-                                         required/>
-                            <FormControl column={5} type={"number"} min={20} name={"year"}
-                                         defaultValue={this.state.paymentData.year}
-                                         onChange={(event) => this.changeState(event.target.name, event.target.value)}
-                                         required/>
+                        <FormGroup as={Row}>
+                            <FormLabel column sm={3}>Expiration Date</FormLabel>
+                            <Col sm={4}>
+                                <FormControl type={"number"} min={1} max={12} name={"month"} maxLength={2}
+                                             disabled={this.props.submitted && this.props.success}
+                                             value={this.state.paymentData.month} placeholder={"MM"}
+                                             onChange={(event) => this.changeState(event.target.name, event.target.value)}
+                                             onFocus={(event) => this.changeFocus("expiry")}
+                                             required/>
+                            </Col>
+                            <Col sm={4}>
+                                <FormControl type={"number"} min={20} name={"year"} maxLength={2}
+                                             disabled={this.props.submitted && this.props.success}
+                                             value={this.state.paymentData.year} placeholder={"YY"}
+                                             onChange={(event) => this.changeState(event.target.name, event.target.value)}
+                                             onFocus={(event) => this.changeFocus("expiry")}
+                                             required/>
+                            </Col>
                         </FormGroup>
-                        <FormGroup>
-                            <Button variant={"secondary"} onClick={this.props.submitRentalForm(false)}>Cancel</Button>
-                            <Button variant={"success"} type={"submit"}>Confirm</Button>
+                        <FormGroup as={Row}>
+                            <FormLabel column sm={3}>CVV</FormLabel>
+                            <Col sm={4}>
+                                <FormControl type={"text"} name={"cvv"}
+                                             disabled={this.props.submitted && this.props.success}
+                                             value={this.state.paymentData.cvv} maxLength={3}
+                                             onChange={(event) => this.changeState(event.target.name, event.target.value)}
+                                             onFocus={(event) => this.changeFocus("cvc")}
+                                             required/>
+                            </Col>
                         </FormGroup>
+                        {!this.props.submitted || !this.props.success ?
+                            <FormGroup as={Row} className={"text-right"}>
+                                <Col sm={{offset: 0}}>
+                                    <Button variant={"secondary"}
+                                            onClick={() => this.props.submitRentalForm(false)}>Cancel</Button>{' '}
+                                    <Button variant={"success"} type={"submit"}>Confirm</Button>
+                                </Col>
+                            </FormGroup>
+                            :
+                            null}
                         {this.state.loading ?
-                            <Spinner animation="border" role="status" variant="secondary"/> : null}
+                            <Spinner animation="border" role="status" variant="secondary"/>
+                            :
+                            (this.props.submitted && !this.props.success) ?
+                            <Alert variant={"danger"}>
+                                <Alert.Heading>Something wrong in payment! Check your data or try again
+                                    later!</Alert.Heading>
+                            </Alert>
+                            :
+                             null}
                     </Form>
                 </Col>
             </Row>
-        </Container>
     }
 }
 
