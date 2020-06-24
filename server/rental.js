@@ -14,21 +14,25 @@ class Rental {
         this.price = +price;
     }
 
-    toDto = (rental) => {
-        let dto = {...rental};
-        const age = rental.age;
+    toDto = (vehicle) => {
+        let dto = {...this};
+        const age = dto.age;
         switch (age) {
             case 1: dto.age = "18 - 24"; break;
             case 2: dto.age = "25 - 64"; break;
             case 3: dto.age = "65 +"; break;
         }
 
-        const kms = rental.kms;
+        const kms = dto.kms;
         switch (kms) {
-            case 1: dto.kms = "0 - 49"; break;
-            case 2: dto.kms = "50 - 149"; break;
+            case 1: dto.kms = "0 - 49 km/day"; break;
+            case 2: dto.kms = "50 - 149 km/day"; break;
             case 3: dto.kms = "unlimited"; break;
         }
+
+        dto.vehicle = vehicle;
+
+        return dto;
     }
 }
 

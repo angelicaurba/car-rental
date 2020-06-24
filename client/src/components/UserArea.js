@@ -3,6 +3,7 @@ import {Alert, Button, Container} from "react-bootstrap";
 import {Route, Switch} from 'react-router-dom';
 import RentalForm from './RentalForm';
 import Payment from './Payment';
+import Rentals from './Rentals.js'
 import moment from 'moment';
 import NumberAndPriceRequest from "../api/NumberAndPriceRequest";
 import * as api from '../api/API';
@@ -136,16 +137,12 @@ class UserArea extends React.Component {
                            :
                            null}
                    </Container>}/>
-            <Route exact path={"/user/rentals"} render={() => <Rentals/>}/>
+            <Route path={"/user/rentals"} render={() => <Rentals/>}/>
         </Switch>
     }
 
 }
 
-
-function Rentals(props) {
-    return <></>;
-}
 
 function NumberAndPrice(props) {
     if (!props.numberAndPrice.arrived)

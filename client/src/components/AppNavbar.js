@@ -12,23 +12,23 @@ function AppNavbar(props) {
         return <Navbar className={"row"} bg="primary" expand="true">
             <Navbar.Brand className={"col-5 col-md-3 row"}>
                 <Image src={logo} className={"col-6"} height={50} rounded/>
-                <span className={"col-5"}>Rentals.com</span>
+                <span className={"col-5 d-sm-inline d-none"}>Rentals.com</span>
             </Navbar.Brand>
             {props.loggedIn === true && !location.pathname.endsWith("/login") && props.name ?
                 <span className={"col-3 d-md-inline d-none"}><h6>Welcome {props.name}!</h6></span>
                 :
                 null
             }
-            <div className={"col-6 col-md-5 row"}>
-                {location.pathname.endsWith("newrental") ?
-                    <Link to={"/user/rentals"} className={"col-6 col-lg-5"}>
+            <div className={"col-6 col-md-5 row d-flex justify-content-end"}>
+                {location.pathname.includes("newrental") ?
+                    <Link to={"/user/rentals/future"} className={"col-6 col-lg-5"}>
                         <Button className={"row"} variant="outline-light">
                             <FaCarSide className={"col-12"}/>
                             <span className={"col-12 d-sm-block d-none"}>Your rentals</span>
                         </Button>
                     </Link>
                     :
-                    (location.pathname.endsWith("rentals")) ?
+                    (location.pathname.includes("rentals") )|| (location.pathname.includes("catalogue") && props.loggedIn) ?
                         <Link to={"/user/newrental"} className={"col-6 col-lg-5"}>
                             <Button className={"row"} variant="outline-light">
                                 <FaCarSide className={"col-12"}/>
