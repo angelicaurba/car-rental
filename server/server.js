@@ -15,6 +15,8 @@ const moment = require("moment");
 const userDao = require('./user_dao');
 const vehicleDao = require('./vehicle_dao');
 const requestDao = require('./request_dao');
+const rentalDao = require('./rental_dao');
+
 
 // Set-up logging
 app.use(morgan('tiny'));
@@ -85,23 +87,43 @@ app.get('/api/vehicles/request', (req, res) => {
     if (req.query) {
         const request = req.query;
         if (checkData(request)) {
-            Promise.all([requestDao.getAvailableVehicles(request), requestDao.getNumberByCategory(request.category), requestDao.getPreviousRentals(req.user.userId)])
-                .then((results) => {
-                    const numberAndPrice = results[0];
-                    if (numberAndPrice.number === 0) {
-                        res.json(numberAndPrice);
-
-                    } else {
-                        const previousRentals = results[2];
-                        const totalCars = results[1];
-                        let price = calculatePrice(request, numberAndPrice, totalCars, previousRentals);
-                        numberAndPrice.price = price;
-                        res.json(numberAndPrice);
-                    }
-                })
-                .catch(err => res.status(500).json({error: err}));
+            requestNumberAndPrice(request, req.user.userId)
+                .then(response => res.json(response))
+                .catch(err => {console.log(err); res.status(500).json({error: err});});
             return;
         }
+    }
+    res.status(500).json({error: "invalid data"});
+});
+
+app.post('/api/rentals/payment', (req, res) => {
+    const request = req.body.rentalData;
+    const payment = req.body.paymentData;
+   if(checkData(request) && checkPaymentData(payment)){
+       requestNumberAndPrice(request, req.user.userId)
+           .then((numberAndPrice) => {
+               if(numberAndPrice && numberAndPrice.number > 0){
+                   if(numberAndPrice.price == payment.price){
+                       res.end();
+                   }
+               }
+           })
+           .catch((err) => {console.log(err); res.status(500).json({error: err});});
+       return;
+   }
+    res.status(500).json({error: "invalid data"});
+});
+
+app.post("/api/rentals", (req, res) => {
+    console.log(req.body);
+    const request = req.body.rentalData;
+    const price = req.body.price;
+    if(checkData(request)){
+        requestDao.chooseVehicle(request)
+            .then((vehicleid) => rentalDao.insertRental(request, vehicleid, req.user.userId, price))
+            .then(() => res.end())
+            .catch((err) => res.status(500).json({error: err}));
+        return;
     }
     res.status(500).json({error: "invalid data"});
 });
@@ -110,16 +132,51 @@ app.get('/api/vehicles/request', (req, res) => {
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
 
 
-checkData = (request) => {
+const checkData = (request) => {
     if (request.datein && request.dateout && moment(request.datein).isAfter(moment()) && moment(request.datein).isSameOrBefore(request.dateout)) {
         let regexCat = new RegExp("[A-E]");
         if (regexCat.test(request.category) && +request.kms !== -1 && +request.age !== -1 && +request.others >= 0) {
             return true;
         }
     }
+    return false;
 }
 
-calculatePrice = (request, numberAndPrice, totalCars, previousRentals) => {
+const checkPaymentData = (paymentData) => {
+    const pattern = new RegExp("[0-9]+")
+    const namePattern = new RegExp("[a-zA-Z ]+")
+
+    if(paymentData.cvv && paymentData.cvv.length === 3 && pattern.test(paymentData.cvv)) { //cvv ok
+        if(paymentData.month && pattern.test(paymentData.month) && +paymentData.month <= 12 && +paymentData.month >= 1){ //month ok
+            if(paymentData.year && pattern.test(paymentData.year) && +paymentData.year  >= 20){ //year ok
+                if(paymentData.name && namePattern.test(paymentData.name)){ //name ok
+                    if(paymentData.number && paymentData.number.length === 16 && pattern.test(paymentData.number))
+                        return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+const requestNumberAndPrice = (request, id) => {
+   return Promise.all([requestDao.getAvailableVehicles(request), requestDao.getNumberByCategory(request.category), requestDao.getPreviousRentals(id)])
+        .then((results) => {
+            const numberAndPrice = results[0];
+            if (numberAndPrice.number === 0) {
+                return numberAndPrice;
+            } else {
+                const previousRentals = results[2];
+                const totalCars = results[1];
+                let price = calculatePrice(request, numberAndPrice, totalCars, previousRentals);
+                numberAndPrice.price = price;
+                return numberAndPrice;
+            }
+        });
+}
+
+const calculatePrice = (request, numberAndPrice, totalCars, previousRentals) => {
     const kms_percentage = 1 + (request.kms == 1 ? -5 : (request.kms == 2 ? 0 : +5)) / 100;
     const age_percentage = 1 + (request.age == 1 ? +5 : (request.age == 2 ? 0 : +10)) / 100;
     const others_percentage = 1 + (request.others > 0 ? 15 : 0) / 100;

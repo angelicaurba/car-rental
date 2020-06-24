@@ -59,6 +59,27 @@ exports.getPreviousRentals = (id) => {
     });
 }
 
+exports.chooseVehicle = (request) => {
+    const sql = "SELECT * " +
+        "FROM vehicles " +
+        "WHERE Category = ? AND " +
+        "VehicleId NOT IN (" +
+        "SELECT VehicleId " +
+        "FROM rentals " +
+        "WHERE ( ? >= DateFrom AND ? <= DateTo ) " +
+        "OR ( ? >= DateFrom AND ? <= DateTo ) " +
+        ")";
+    return new Promise((resolve, reject) => {
+        db.all(sql, [request.category, request.datein, request.datein, request.dateout, request.dateout], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(rows[0].VehicleId);
+            }
+        });
+    });
+}
+
 const createVehicle = function (row) {
     const id = row.VehicleId;
     const category = row.Category;
