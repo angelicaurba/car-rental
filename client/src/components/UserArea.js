@@ -32,7 +32,9 @@ class UserArea extends React.Component {
             error: {
                 isPresent: false,
                 message: ""
-            }
+            },
+            paymentSubmitted: false,
+            paymentSuccess: false
         }
     }
 
@@ -64,6 +66,17 @@ class UserArea extends React.Component {
             }
         });
         return false;
+    }
+
+    handlePayment = (paymentData) => {
+        let paymentParam = {...paymentData};
+        paymentParam.price = this.state.numberAndPrice.price;
+        this.setState({paymentSubmitted: false});
+        const formData = this.state.formData;
+        let data = new NumberAndPriceRequest(formData.datein, formData.dateout, formData.category, +formData.driverage, +formData.extradrivers, +formData.kms, formData.extrainsurance ? 1 : 0);
+        api.handlePayment(paymentParam, data)
+            .then((result) => {this.setState({paymentSubmitted: true, paymentSuccess: true});})
+            .catch(err => {this.setState({paymentSubmitted: true, paymentSuccess: false});});
     }
 
     retrieveNumberAndPrice = (request) => {
@@ -103,16 +116,25 @@ class UserArea extends React.Component {
     render() {
         return <Switch>
             <Route exact path={"/user/newrental"}
-                   render={() => <Container className={"rentalForm jumbotron"}><RentalForm
-                       submitted={this.state.submittedForm}
-                       checkValues={this.checkValues}
-                       changeFormData={this.changeFormData} retrieveNumberAndPrice={this.retrieveNumberAndPrice}
-                       formData={this.state.formData}/>
-                       {this.state.submittedForm ?
-                           <Payment submitRentalForm={this.submitForm}/>
+                   render={() =>  <Container className={"rentalForm jumbotron"}>
+                       {!this.state.paymentSuccess ?
+                           <><RentalForm
+                               submitted={this.state.submittedForm}
+                               checkValues={this.checkValues}
+                               changeFormData={this.changeFormData} retrieveNumberAndPrice={this.retrieveNumberAndPrice}
+                               formData={this.state.formData}/>
+                           <NumberAndPrice numberAndPrice={this.state.numberAndPrice} submittedForm={this.state.submittedForm} submitRentalForm={this.submitForm}/>
+                           </>
                            :
-                           <NumberAndPrice numberAndPrice={this.state.numberAndPrice} submitForm={this.submitForm}/>
+                           null
                        }
+                       {this.state.submittedForm ?
+                           <Payment submitRentalForm={this.submitForm}
+                                    handlePayment={this.handlePayment}
+                                    submitted={this.state.paymentSubmitted}
+                                    success={this.state.paymentSuccess}/>
+                           :
+                           null}
                    </Container>}/>
             <Route exact path={"/user/rentals"} render={() => <Rentals/>}/>
         </Switch>
@@ -147,7 +169,7 @@ function NumberAndPrice(props) {
                     "Book it now for " + props.numberAndPrice.price.toFixed(2) + "€!"}</Alert.Heading>
             }
             <hr/>
-                <Button variant={"primary"} className={"d-flex justify-content-end"} onClick={() => props.submitForm(true)}>Book your car!</Button>
+            <Button variant={"primary"} disabled={props.submittedForm} className={"d-flex justify-content-end"} onClick={() => props.submitRentalForm(true)}>Book your car!</Button>
             </Alert>
             </>
     }

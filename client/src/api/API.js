@@ -60,7 +60,6 @@ async function retrieveNumberAndPrice(request){
     const url = '/api/vehicles/request?'+ Object.entries(request)
         .map(pair => pair.map(encodeURIComponent).join('='))
         .join('&');
-    console.log(url);
     const response = await fetch(url, {
             method: 'GET'});
     const numberAndPrice = await response.json();
@@ -73,4 +72,32 @@ async function retrieveNumberAndPrice(request){
     }
 }
 
-export {tryLogin, login, logout, getAllVehicles, retrieveNumberAndPrice}
+async function handlePayment(paymentData, rentalData){ //payment data also contains the price to be payed
+    //fetch post api for payment
+    const paymentresponse = await fetch("/api/rentals/payment", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({paymentData: paymentData, rentalData: rentalData})
+    });
+    if(paymentresponse.ok && paymentresponse.status === 200){
+        //fetch post api for rental
+        const bookingresponse = await fetch("/api/rentals", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({price: paymentData.price, rentalData: rentalData})
+        });
+        if(bookingresponse.ok && bookingresponse.status === 200)
+            return;
+        else
+            throw {status: paymentresponse.status, message: "invalid payment"};
+    }
+    else{
+        throw {status: paymentresponse.status, message: "invalid payment"};
+    }
+}
+
+export {tryLogin, login, logout, getAllVehicles, retrieveNumberAndPrice, handlePayment}
