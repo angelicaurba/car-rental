@@ -7,18 +7,6 @@ function LoginForm(props) {
     const [err, setErr] = useState(false);
     const [loading, setLoading] = useState(false);
     const errorMessage = "Your credentials are not correct!"
-    useEffect(() => {
-        API.tryLogin()
-            .then((response) => {
-                if (response.name) {
-                    props.change("name", response.name);
-                    props.setLogin();
-                }
-            })
-            .catch(() => {
-            });
-        //the catch is void since no action must be done if the user was not already authenticated
-    }, []);
 
     return <Container id="loginContainer" className={"jumbotron"}>
         <Form onSubmit={(event) => {
