@@ -55,7 +55,7 @@ class Catalogue extends React.Component {
                 </Form>
             </Col>
             <Col md={9}>
-                <Card><ListGroup><VehiclesList vehicles={this.props.vehicles} cats={this.state.cats} brands={this.state.brands}/></ListGroup></Card>
+                <Card className={"minHeight"} ><ListGroup><VehiclesList vehicles={this.props.vehicles} cats={this.state.cats} brands={this.state.brands}/></ListGroup></Card>
             </Col>
         </Row>;
     }

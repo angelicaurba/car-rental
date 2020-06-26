@@ -137,7 +137,7 @@ class UserArea extends React.Component {
                            :
                            null}
                    </Container>}/>
-            <Route path={"/user/rentals"} render={() => <Rentals/>}/>
+            <Route path={"/user/rentals"} render={() => <Rentals setLoggedout={this.props.setLoggedout}/>}/>
         </Switch>
     }
 

@@ -84,3 +84,12 @@ body{
 .rentalForm{
   width: 80vw;
 }
+
+.minHeight{
+  min-height: 80vh;
+}
+
+.rentalRow:hover{
+  border-width: 3px;
+  background-color: lightgrey;
+}

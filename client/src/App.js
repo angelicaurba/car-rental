@@ -55,6 +55,9 @@ class App extends React.Component {
         this.setState({loggedIn: false});
         API.logout();
     }
+    setLoggedout = () => {
+        this.setState({loggedIn: false});
+    }
 
     login = (username, password) => {
         return API.login(username, password)
@@ -92,7 +95,7 @@ class App extends React.Component {
                             if (this.state.loggedIn === false)
                                 return <Redirect to={"/login"}></Redirect>;
                             else
-                                return <UserArea/>
+                                return <UserArea setLoggedout={this.setLoggedout}/>
                         }}/>
                         <Route path={"/"} render={() => <Redirect to={"/catalogue"}></Redirect>}/>
                     </Switch>
