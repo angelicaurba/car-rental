@@ -1,4 +1,5 @@
 import Vehicle from "./Vehicle";
+import Rental from "./Rental";
 
 async function tryLogin(){
     return new Promise((resolve, reject) => {
@@ -53,7 +54,6 @@ async function getAllVehicles(){
         let retErr = {status: response.status, err: vehicles};
         throw retErr;
     }
-
 }
 
 async function retrieveNumberAndPrice(request){
@@ -100,4 +100,18 @@ async function handlePayment(paymentData, rentalData){ //payment data also conta
     }
 }
 
-export {tryLogin, login, logout, getAllVehicles, retrieveNumberAndPrice, handlePayment}
+async function getRentals(){
+    const response = await fetch("/api/rentals");
+    let rentals = await response.json();
+
+    if(response.ok && response.status === 200){
+        return rentals.map( rental => new Rental(rental.datein, rental.dateout, rental.category, rental.age, rental.others, rental.kms, rental.insurance, rental.vehicleid, rental.userid, rental.price, rental.vehicle));
+    }
+    else{
+        let retErr = {status: response.status, err: rentals};
+        throw retErr;
+    }
+}
+
+
+export {tryLogin, login, logout, getAllVehicles, retrieveNumberAndPrice, handlePayment, getRentals}
