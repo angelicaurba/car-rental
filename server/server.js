@@ -128,6 +128,12 @@ app.post("/api/rentals", (req, res) => {
     res.status(500).json({error: "invalid data"});
 });
 
+app.get("/api/rentals", (req, res) => {
+    rentalDao.getRentals(req.user.userId)
+        .then((response) => res.json(response))
+        .catch((err) => res.status(500).json({error: err}));
+});
+
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
 

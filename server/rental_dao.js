@@ -1,5 +1,6 @@
 const db = require("./db");
 const Rental = require('./rental');
+const Vehicle = require('./vehicle');
 
 exports.insertRental = (request, vehicleid, userid, price) => {
     const sql = "INSERT INTO rentals (UserId,VehicleId, DateFrom, DateTo, AgeDriver, OtherDrivers, Kilometers, Insurance, Price) " +
@@ -13,6 +14,29 @@ exports.insertRental = (request, vehicleid, userid, price) => {
         });
     });
 
+}
+
+exports.getRentals = (id) => {
+    const sql = "SELECT * from rentals, vehicles " +
+        "WHERE rentals.VehicleId = vehicles.VehicleId AND UserId = ? ";
+    return new Promise((resolve, reject) => {
+        db.all(sql, [id], (err, rows) => {
+            if(err)
+                reject(err);
+            else {
+                const rentals = rows.map(row => {
+                    console.log(row);
+                    let rental = new Rental(row.DateFrom, row.DateTo, row.Category, row.AgeDriver, row.OtherDrivers, row.Kilometers, row.Insurance, row.VehicleId, row.UserId, row.Price);
+                    let vehicle = new Vehicle(row.VehicleId, row.Category, row.Brand, row.Model);
+                    console.log(rental);
+                    rental = rental.toDto(vehicle);
+                    console.log(rental);
+                    return rental;
+                });
+                resolve(rentals);
+            }
+        });
+    });
 }
 
 createRental = (request, vehicleid, userid, price) => {
