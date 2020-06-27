@@ -2,15 +2,19 @@ const express = require('express');
 
 const PORT = 3001;
 
-app = new express();
+app = new express()
 
-const expireTime = 50000 * 1000; //seconds
+// Authorization error
+const authErrorObj = { errors: [{  'param': 'Server', 'msg': 'Authorization error' }] };
+
+const expireTime = 60*60 * 1000; // 1 hour
 const jwtSecret = "notSoSecret";
 const jsonwebtoken = require("jsonwebtoken");
 const jwt = require("express-jwt");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const moment = require("moment");
+const {check, validationResult} = require('express-validator');
 
 const userDao = require('./user_dao');
 const vehicleDao = require('./vehicle_dao');
@@ -49,9 +53,7 @@ app.post("/api/login", (req, res) => {
         res.status(401).end();
     userDao.getUserByUsername(req.body.username)
         .then((user) => {
-            console.log("server.js POST login " + user);
             let isValid = userDao.checkPassword(user, req.body.password);
-            console.log(isValid);
             if (isValid) {
                 const token = jsonwebtoken.sign({userId: user.id}, jwtSecret, {expiresIn: expireTime});
                 res.cookie('token', token, {httpOnly: true, sameSite: true, maxAge: expireTime});
@@ -60,8 +62,6 @@ app.post("/api/login", (req, res) => {
                 res.status(401).end();
         })
         .catch((err) => {
-            console.log("POST api login");
-            console.log(err);
             res.status(401).end();
         });
 });
@@ -81,6 +81,12 @@ app.use(jwt({
     getToken: req => req.cookies.token
 }));
 
+// To return a better object in case of errors
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json(authErrorObj);
+    }
+});
 
 app.get('/api/vehicles/request', (req, res) => {
     //check again data
@@ -115,14 +121,13 @@ app.post('/api/rentals/payment', (req, res) => {
 });
 
 app.post("/api/rentals", (req, res) => {
-    console.log(req.body);
     const request = req.body.rentalData;
     const price = req.body.price;
     if(checkData(request)){
         requestDao.chooseVehicle(request)
             .then((vehicleid) => rentalDao.insertRental(request, vehicleid, req.user.userId, price))
             .then(() => res.end())
-            .catch((err) => res.status(500).json({error: err}));
+            .catch((err) => {console.log(err); res.status(500).json({error: err});});
         return;
     }
     res.status(500).json({error: "invalid data"});
@@ -134,6 +139,11 @@ app.get("/api/rentals", (req, res) => {
         .catch((err) => res.status(500).json({error: err}));
 });
 
+app.delete("/api/rentals/:rentalid", [check('rentalid').isInt({min: 0})], (req, res) => {
+    rentalDao.deleteRental(req.user.userId, req.params.rentalid)
+        .then(() => res.end())
+        .catch((err) => res.status(500).json({error: err}));
+});
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
 

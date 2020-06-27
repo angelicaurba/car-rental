@@ -105,7 +105,7 @@ async function getRentals(){
     let rentals = await response.json();
 
     if(response.ok && response.status === 200){
-        return rentals.map( rental => new Rental(rental.datein, rental.dateout, rental.category, rental.age, rental.others, rental.kms, rental.insurance, rental.vehicleid, rental.userid, rental.price, rental.vehicle));
+        return rentals.map( rental => new Rental(rental.rentalid, rental.datein, rental.dateout, rental.category, rental.age, rental.others, rental.kms, rental.insurance, rental.vehicleid, rental.userid, rental.price, rental.vehicle));
     }
     else{
         let retErr = {status: response.status, err: rentals};
@@ -113,5 +113,18 @@ async function getRentals(){
     }
 }
 
+async function deleteRental(rentalid){
+    const response = await fetch("/api/rentals/"+rentalid, {
+        method: 'DELETE'
+    });
+    if(response.ok && response.status === 200){
+        return;}
+    else{
+        let retErr = {status: response.status};
+        throw retErr;
+    }
 
-export {tryLogin, login, logout, getAllVehicles, retrieveNumberAndPrice, handlePayment, getRentals}
+}
+
+
+export {tryLogin, login, logout, getAllVehicles, retrieveNumberAndPrice, handlePayment, getRentals, deleteRental}

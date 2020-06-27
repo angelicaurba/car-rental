@@ -1,6 +1,7 @@
 const db = require("./db");
 const Rental = require('./rental');
 const Vehicle = require('./vehicle');
+const moment = require('moment')
 
 exports.insertRental = (request, vehicleid, userid, price) => {
     const sql = "INSERT INTO rentals (UserId,VehicleId, DateFrom, DateTo, AgeDriver, OtherDrivers, Kilometers, Insurance, Price) " +
@@ -25,12 +26,9 @@ exports.getRentals = (id) => {
                 reject(err);
             else {
                 const rentals = rows.map(row => {
-                    console.log(row);
                     let rental = new Rental(row.DateFrom, row.DateTo, row.Category, row.AgeDriver, row.OtherDrivers, row.Kilometers, row.Insurance, row.VehicleId, row.UserId, row.Price);
                     let vehicle = new Vehicle(row.VehicleId, row.Category, row.Brand, row.Model);
-                    console.log(rental);
-                    rental = rental.toDto(vehicle);
-                    console.log(rental);
+                    rental = rental.toDto(vehicle, row.RentalId);
                     return rental;
                 });
                 resolve(rentals);
@@ -39,7 +37,20 @@ exports.getRentals = (id) => {
     });
 }
 
+exports.deleteRental = (userid, rentalid) => {
+    const sql = "DELETE FROM rentals WHERE RentalId = ? AND UserId = ? AND DateFrom > ?";
+    return new Promise((resolve, reject) => {
+        db.run(sql, [rentalid, userid, moment().format("yyyy-MM-DD")], function(err){
+            if(err || this.changes !== 1){
+                reject();
+            }
+            else
+                resolve();
+        });
+    });
+}
+
 createRental = (request, vehicleid, userid, price) => {
-    const rental = new Rental(request.datein, request.dateout, +request.age, +request.others, +request.kms, +request.insurance, vehicleid, userid, price);
+    const rental = new Rental(request.datein, request.dateout, request.category, +request.age, +request.others, +request.kms, +request.insurance, vehicleid, userid, price);
     return rental;
 }
