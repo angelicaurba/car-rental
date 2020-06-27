@@ -23,8 +23,8 @@ function RentalForm(props) {
                 let request = props.checkValues(props.formData.datein, props.formData.dateout, props.formData.category, props.formData.driverage, props.formData.extradrivers, props.formData.kms, props.formData.extrainsurance);
                 if (request) {
                     setLoading(true);
-                    props.retrieveNumberAndPrice(request);
-                    setLoading(false);
+                    props.retrieveNumberAndPrice(request)
+                        .finally(() => setLoading(false));
                 }
             }
         }

@@ -76,8 +76,15 @@ class UserArea extends React.Component {
         const formData = this.state.formData;
         let data = new NumberAndPriceRequest(formData.datein, formData.dateout, formData.category, +formData.driverage, +formData.extradrivers, +formData.kms, formData.extrainsurance ? 1 : 0);
         api.handlePayment(paymentParam, data)
-            .then((result) => {this.setState({paymentSubmitted: true, paymentSuccess: true});})
-            .catch(err => {this.setState({paymentSubmitted: true, paymentSuccess: false});});
+            .then((result) => {
+                this.setState({paymentSubmitted: true, paymentSuccess: true});
+            })
+            .catch(err => {
+                if (err.status === 401)
+                    this.props.setLoggedout();
+                else
+                    this.setState({paymentSubmitted: true, paymentSuccess: false});
+            });
     }
 
     retrieveNumberAndPrice = (request) => {
@@ -89,7 +96,7 @@ class UserArea extends React.Component {
                 price: -1
             }
         });
-        api.retrieveNumberAndPrice(request)
+        return api.retrieveNumberAndPrice(request)
             .then((result) => {
                 this.setState({
                     numberAndPrice: {
@@ -100,16 +107,18 @@ class UserArea extends React.Component {
                     }
                 });
             })
-            .catch((result) => {
-                console.log(result);
-                this.setState({
-                    numberAndPrice: {
-                        arrived: true,
-                        isValid: false,
-                        number: -1,
-                        price: -1
-                    }
-                });
+            .catch((err) => {
+                if (err.status === 401)
+                    this.props.setLoggedout();
+                else
+                    this.setState({
+                        numberAndPrice: {
+                            arrived: true,
+                            isValid: false,
+                            number: -1,
+                            price: -1
+                        }
+                    });
             });
     }
 
@@ -117,14 +126,16 @@ class UserArea extends React.Component {
     render() {
         return <Switch>
             <Route exact path={"/user/newrental"}
-                   render={() =>  <Container className={"rentalForm jumbotron"}>
+                   render={() => <Container className={"rentalForm jumbotron"}>
                        {!this.state.paymentSuccess ?
                            <><RentalForm
                                submitted={this.state.submittedForm}
                                checkValues={this.checkValues}
                                changeFormData={this.changeFormData} retrieveNumberAndPrice={this.retrieveNumberAndPrice}
                                formData={this.state.formData}/>
-                           <NumberAndPrice numberAndPrice={this.state.numberAndPrice} submittedForm={this.state.submittedForm} submitRentalForm={this.submitForm}/>
+                               <NumberAndPrice numberAndPrice={this.state.numberAndPrice}
+                                               submittedForm={this.state.submittedForm}
+                                               submitRentalForm={this.submitForm}/>
                            </>
                            :
                            null
@@ -137,7 +148,7 @@ class UserArea extends React.Component {
                            :
                            null}
                    </Container>}/>
-            <Route path={"/user/rentals"} render={() => <Rentals setLoggedout={this.props.setLoggedout}/>}/>
+            <Route path={"/user/rentals/"} render={() => <Rentals setLoggedout={this.props.setLoggedout}/>}/>
         </Switch>
     }
 
@@ -158,15 +169,16 @@ function NumberAndPrice(props) {
         } else if (props.numberAndPrice.isValid && props.numberAndPrice.number > 0)
             return <><Alert variant={"success"}>{
                 props.numberAndPrice.number > 1 ?
-                    <Alert.Heading>{"There are only " +
-                    <strong>props.numberAndPrice.number</strong> + "cars available for the choosen period and category! " +
-                    "Book yours now for " + props.numberAndPrice.price.toFixed(2) + "€!"}</Alert.Heading>
+                    <Alert.Heading>{"There are only "}
+                        <strong>{props.numberAndPrice.number}</strong>{" cars available for the choosen period and category! " +
+                        "Book yours now for " + props.numberAndPrice.price.toFixed(2) + "€!"}</Alert.Heading>
                     :
                     <Alert.Heading><strong>Last</strong>{" car available for the choosen period and category! " +
                     "Book it now for " + props.numberAndPrice.price.toFixed(2) + "€!"}</Alert.Heading>
             }
-            <hr/>
-            <Button variant={"primary"} disabled={props.submittedForm} className={"d-flex justify-content-end"} onClick={() => props.submitRentalForm(true)}>Book your car!</Button>
+                <hr/>
+                <Button variant={"primary"} disabled={props.submittedForm} className={"d-flex justify-content-end"}
+                        onClick={() => props.submitRentalForm(true)}>Book your car!</Button>
             </Alert>
             </>
     }

@@ -14,7 +14,7 @@ class Rental {
         this.price = +price;
     }
 
-    toDto = (vehicle) => {
+    toDto = (vehicle, rentalid) => {
         let dto = {...this};
         const age = dto.age;
         switch (age) {
@@ -31,6 +31,7 @@ class Rental {
         }
 
         dto.vehicle = vehicle;
+        dto.rentalid = rentalid;
 
         return dto;
     }

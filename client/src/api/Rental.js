@@ -1,7 +1,7 @@
-"use strict"
+
 
 class Rental {
-    constructor(datein, dateout, category, age, others, kms, insurance, vehicleid, userid, price, vehicle) {
+    constructor(rentalid, datein, dateout, category, age, others, kms, insurance, vehicleid, userid, price, vehicle) {
         this.datein = datein;
         this.dateout = dateout;
         this.category = category;
@@ -13,6 +13,7 @@ class Rental {
         this.userid = +userid;
         this.price = +price;
         this.vehicle = vehicle;
+        this.rentalid = rentalid;
     }
 }
 

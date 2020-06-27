@@ -25,6 +25,7 @@ class App extends React.Component {
     }
 
     componentDidMount() {
+        this.setState({loading: true});
         API.getAllVehicles()
             .then((result) => this.setState({vehicles: [...result], loading: false}))
             .catch(err => console.log(err));
@@ -89,7 +90,7 @@ class App extends React.Component {
                             else return <Redirect to={"/user/newrental"}></Redirect>
                         }}/>
                         <Route exact path={"/catalogue"} render={() => {
-                            return <Catalogue vehicles={this.state.vehicles}/>;
+                            return <Catalogue loading={this.state.loading} vehicles={this.state.vehicles}/>;
                         }}/>
                         <Route path={"/user/"} render={() => {
                             if (this.state.loggedIn === false)

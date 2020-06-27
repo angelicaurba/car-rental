@@ -61,7 +61,7 @@ class Payment extends React.Component {
             <Alert variant={"success"}>
                 <Alert.Heading>Booking executed successfully!</Alert.Heading>
                 <hr/>
-                <Link to={"/user/rentals"}><Button variant={"primary"}>Check yuor rentals</Button> </Link>
+                <Link to={"/user/rentals/future"}><Button variant={"primary"}>Check your rentals</Button> </Link>
             </Alert>
             :
             <Row>
@@ -79,7 +79,6 @@ class Payment extends React.Component {
                     <Form className={"text-left"} onSubmit={(event) => {
                         event.preventDefault();
                         this.submitPayment(event.target);
-                        console.log("submit");
                     }}>
                         <FormGroup as={Row}>
                             <Form.Label column sm={3}>Name</Form.Label>
@@ -87,8 +86,10 @@ class Payment extends React.Component {
                                 <Form.Control type={"text"} placeholder={"Name"} name={"name"}
                                               disabled={this.props.submitted && this.props.success}
                                               value={this.state.paymentData.name}
+                                              pattern={"[a-zA-Z ]*"}
                                               onChange={(event) => this.changeState(event.target.name, event.target.value)}
                                               onFocus={(event) => this.changeFocus(event.target.name)}
+                                              minLength={5}
                                               required/>
                             </Col>
                         </FormGroup>
@@ -97,7 +98,7 @@ class Payment extends React.Component {
                             <Col sm={8}>
                                 <FormControl type={"tel"} placeholder={"Card Number"} name={"number"}
                                              disabled={this.props.submitted && this.props.success}
-                                             maxLength={16}
+                                             pattern={"[0-9]{16}"}
                                              value={this.state.paymentData.number}
                                              onChange={(event) => this.changeState(event.target.name, event.target.value.toUpperCase())}
                                              onFocus={(event) => this.changeFocus(event.target.name)}
@@ -107,7 +108,7 @@ class Payment extends React.Component {
                         <FormGroup as={Row}>
                             <FormLabel column sm={3}>Expiration Date</FormLabel>
                             <Col sm={4}>
-                                <FormControl type={"number"} min={1} max={12} name={"month"} maxLength={2}
+                                <FormControl type={"number"} min={1} max={12} name={"month"}
                                              disabled={this.props.submitted && this.props.success}
                                              value={this.state.paymentData.month} placeholder={"MM"}
                                              onChange={(event) => this.changeState(event.target.name, event.target.value)}
@@ -115,7 +116,7 @@ class Payment extends React.Component {
                                              required/>
                             </Col>
                             <Col sm={4}>
-                                <FormControl type={"number"} min={20} name={"year"} maxLength={2}
+                                <FormControl type={"number"} min={20} name={"year"}
                                              disabled={this.props.submitted && this.props.success}
                                              value={this.state.paymentData.year} placeholder={"YY"}
                                              onChange={(event) => this.changeState(event.target.name, event.target.value)}
@@ -128,7 +129,9 @@ class Payment extends React.Component {
                             <Col sm={4}>
                                 <FormControl type={"text"} name={"cvv"}
                                              disabled={this.props.submitted && this.props.success}
-                                             value={this.state.paymentData.cvv} maxLength={3}
+                                             value={this.state.paymentData.cvv}
+                                             pattern={"[0-9]{3}"}
+                                             placeholder={"CVV"}
                                              onChange={(event) => this.changeState(event.target.name, event.target.value)}
                                              onFocus={(event) => this.changeFocus("cvc")}
                                              required/>

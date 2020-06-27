@@ -1,4 +1,4 @@
-"use strict"
+
 
 class Vehicle {
     constructor(id, category, brand, model, price){

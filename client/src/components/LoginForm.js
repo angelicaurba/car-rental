@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Alert, Button, Col, Container, Form, Row, Spinner} from 'react-bootstrap';
-import * as API from "../api/API";
 
 
 function LoginForm(props) {
@@ -9,7 +8,7 @@ function LoginForm(props) {
     const errorMessage = "Your credentials are not correct!"
 
     return <Container id="loginContainer" className={"jumbotron"}>
-        <Form onSubmit={(event) => {
+        <Form className={"text-left"} onSubmit={(event) => {
             event.preventDefault();
             if (event.target.checkValidity()) {
                 setLoading(true);
@@ -30,10 +29,10 @@ function LoginForm(props) {
 
             <Form.Group><h5>Write your credentials</h5></Form.Group>
             <Form.Group as={Row} controlId="formHorizontalEmail">
-                <Form.Label column sm={2}>
+                <Form.Label column sm={3}>
                     Username
                 </Form.Label>
-                <Col sm={10}>
+                <Col sm={9}>
                     <Form.Control name="username"
                                   onChange={(event) => props.change(event.target.name, event.target.value)}
                                   type="username" placeholder="Username" value={props.username} required/>
@@ -41,10 +40,10 @@ function LoginForm(props) {
             </Form.Group>
 
             <Form.Group as={Row} controlId="formHorizontalPassword">
-                <Form.Label column sm={2}>
+                <Form.Label column sm={3}>
                     Password
                 </Form.Label>
-                <Col sm={10}>
+                <Col sm={9}>
                     <Form.Control name="password"
                                   onChange={(event) => props.change(event.target.name, event.target.value)}
                                   type="password" placeholder="Password" value={props.password} required/>
@@ -56,7 +55,7 @@ function LoginForm(props) {
         </Form>
         <Container id="underLogin">
             {(loading === true) ?
-                <Spinner animation="border" role="status" variant="secondary" />
+                <Spinner animation="border" role="status" variant="secondary"/>
                 :
                 (err === true) ?
                     <Alert variant={"danger"}>
