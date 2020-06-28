@@ -11,9 +11,15 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            /*
+             the initialization to undefined is a trick to avoid that a late update to true
+             ("late" because the tryLogin api takes some time to return)
+             causes the application to go to the rentalform page
+             whatever is the initial path
+             ( initial path that needs authentication && loggedIn = false => redirect to login
+                => in the meanwhile loggedIn updates to true => redirects to /user/newrental )
+             */
             loggedIn: undefined,
-            //trick to avoid that a late update to true
-            // causes the application to go to the rentalform page
             user: {
                 username: "",
                 password: "",
@@ -56,6 +62,11 @@ class App extends React.Component {
         this.setState({loggedIn: false});
         API.logout();
     }
+
+    /*
+    called by the components when receiving a 401
+    (due to the token expiration) from an api call
+     */
     setLoggedout = () => {
         this.setState({loggedIn: false});
     }
@@ -87,18 +98,18 @@ class App extends React.Component {
                                 return <LoginForm login={this.login}
                                                   change={this.changeUserField} username={this.state.user.username}
                                                   password={this.state.user.password}/>;
-                            else return <Redirect to={"/user/newrental"}></Redirect>
+                            else return <Redirect to={"/user/newrental"}/>
                         }}/>
                         <Route exact path={"/catalogue"} render={() => {
                             return <Catalogue loading={this.state.loading} vehicles={this.state.vehicles}/>;
                         }}/>
                         <Route path={"/user/"} render={() => {
                             if (this.state.loggedIn === false)
-                                return <Redirect to={"/login"}></Redirect>;
+                                return <Redirect to={"/login"}/>;
                             else
                                 return <UserArea setLoggedout={this.setLoggedout}/>
                         }}/>
-                        <Route path={"/"} render={() => <Redirect to={"/catalogue"}></Redirect>}/>
+                        <Route path={"/"} render={() => <Redirect to={"/catalogue"}/>}/>
                     </Switch>
                 </Router>
             </div>

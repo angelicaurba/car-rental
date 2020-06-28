@@ -1,5 +1,11 @@
 "use strict"
 
+
+/*
+* this class hide the calculus of the base price
+* that is based on the car's category;
+* only this class and the calculatePrice in server.js are in charge to decide the price
+* */
 class Vehicle {
     constructor(id, category, brand, model){
         this.id = id;

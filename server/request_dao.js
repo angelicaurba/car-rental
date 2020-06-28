@@ -1,6 +1,11 @@
 const db = require("./db");
 const Vehicle = require('./vehicle');
 
+/* in this file there are the the sql queries
+that involve both the rentals and the vehicles tables
+ */
+
+//retrieve the number and the price of the available vehicles, given the category and the period of rental
 exports.getAvailableVehicles = function (request) {
     return new Promise(((resolve, reject) => {
         const sql = "SELECT COUNT(*) as number " +
@@ -11,9 +16,9 @@ exports.getAvailableVehicles = function (request) {
             "FROM rentals " +
             "WHERE ( ? >= DateFrom AND ? <= DateTo ) " +
             "OR ( ? >= DateFrom AND ? <= DateTo ) " +
-            ")";
+            " OR ( ? >= DateFrom AND ? <= DateTo ) ) ";
 
-        db.get(sql, [request.category, request.datein, request.datein, request.dateout, request.dateout], (err, row) => {
+        db.get(sql, [request.category, request.datein, request.datein, request.dateout, request.dateout, request.datein, request.dateout], (err, row) => {
             if (err) {
                 reject(err);
             } else {
@@ -33,32 +38,7 @@ exports.getAvailableVehicles = function (request) {
     }));
 }
 
-exports.getNumberByCategory = (category) => {
-    return new Promise((resolve, reject) => {
-        const sql = "SELECT COUNT(*) AS number FROM vehicles WHERE Category = ?";
-        db.get(sql, [category], (err, row) => {
-            if (err)
-                reject(err);
-            else {
-                resolve(row.number);
-            }
-        });
-    });
-}
-
-exports.getPreviousRentals = (id) => {
-    return new Promise((resolve, reject) => {
-        const sql = "SELECT COUNT(*) as number FROM rentals WHERE UserId = ?";
-        db.get(sql, [id], (err, row) => {
-            if (err)
-                reject(err);
-            else {
-                resolve(row.number);
-            }
-        });
-    });
-}
-
+//selects the first vehicle among the available ones and returns its id
 exports.chooseVehicle = (request) => {
     const sql = "SELECT * " +
         "FROM vehicles " +
@@ -68,18 +48,21 @@ exports.chooseVehicle = (request) => {
         "FROM rentals " +
         "WHERE ( ? >= DateFrom AND ? <= DateTo ) " +
         "OR ( ? >= DateFrom AND ? <= DateTo ) " +
-        ")";
+        "OR ( ? >= DateFrom AND ? <= DateTo ) ) LIMIT 1 ";
     return new Promise((resolve, reject) => {
-        db.all(sql, [request.category, request.datein, request.datein, request.dateout, request.dateout], (err, rows) => {
+        db.get(sql, [request.category, request.datein, request.datein, request.dateout, request.dateout, request.datein, request.dateout], (err, row) => {
             if (err) {
                 reject(err);
             } else {
-                resolve(rows[0].VehicleId);
+                resolve(row.VehicleId);
             }
         });
     });
 }
 
+/*
+just call the constructor of the Vehicle class in a cleaner way
+ */
 const createVehicle = function (row) {
     const id = row.VehicleId;
     const category = row.Category;

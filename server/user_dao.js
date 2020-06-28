@@ -2,6 +2,10 @@ const db = require("./db");
 const bcrypt = require('bcrypt');
 const User = require('./user');
 
+/*
+* if the user was already authenticated, the token already has his/her id
+* and just needs to retrieve his/her name to give it to the front-end
+* */
 exports.getNameById = function(id){
     const sql = "SELECT name FROM users WHERE UserId = ?";
     return new Promise((resolve, reject) => {
@@ -15,12 +19,13 @@ exports.getNameById = function(id){
     });
 }
 
+/*
+given a username, returns the user field to check the credentials
+ */
 exports.getUserByUsername = function (username) {
     return new Promise((resolve, reject) => {
         const sql = "SELECT * FROM users WHERE username = ?"
         db.all(sql, [username], (err, rows) => {
-            console.log(rows);
-            console.log("user_dao "+ username);
             if (err)
                 reject(err);
             else if (rows.length !== 1)
@@ -42,11 +47,7 @@ const createUser = function(row){
     return new User(id, username, password, name);
 }
 
+//checks if the password is correct
 exports.checkPassword = function(user, password){
-    console.log("hash of: " + password);
-    //let hash = bcrypt.hashSync(password, 10);
-    //console.log(hash);
-    //console.log("DONE");
-
     return bcrypt.compareSync(password, user.password);
 }

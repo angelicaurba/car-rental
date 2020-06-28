@@ -1,9 +1,10 @@
 import React from 'react';
-import {Alert, Button, Container} from "react-bootstrap";
-import {Route, Switch, Redirect} from 'react-router-dom';
+import {Container} from "react-bootstrap";
+import {Redirect, Route, Switch} from 'react-router-dom';
 import RentalForm from './RentalForm';
 import Payment from './Payment';
 import Rentals from './Rentals.js'
+import NumberAndPrice from "./NumberAndPrice.js";
 import moment from 'moment';
 import NumberAndPriceRequest from "../api/NumberAndPriceRequest";
 import * as api from '../api/API';
@@ -18,8 +19,8 @@ const emptyFormData = {
     extrainsurance: false
 };
 const emptyNumberAndPrice = {
-    arrived: false,
-    isValid: false,
+    arrived: false,  //flag that is set to true when the api that retrieves number and prive returns
+    isValid: false,  //to check if the received numberAndPrice object is valid
     number: -1,
     price: -1
 };
@@ -53,8 +54,13 @@ class UserArea extends React.Component {
         this.setState({submittedForm: value});
     }
 
+    /*
+    called form the Payment when a rental booking has finished successfully;
+    when not successful, data are not reset to allow the user to modify them
+     */
     resetState = () => {
-        this.setState({formData: emptyFormData,
+        this.setState({
+            formData: emptyFormData,
             numberAndPrice: emptyNumberAndPrice,
             submittedForm: false,
             loadingForm: false,
@@ -63,7 +69,8 @@ class UserArea extends React.Component {
                 message: ""
             },
             paymentSubmitted: false,
-            paymentSuccess: false});
+            paymentSuccess: false
+        });
     }
 
     checkValues = (datein, dateout, category, age, others, kms, insurance) => {
@@ -74,12 +81,7 @@ class UserArea extends React.Component {
             }
         }
         this.setState({
-            numberAndPrice: {
-                arrived: false,
-                isValid: false,
-                number: -1,
-                price: -1
-            }
+            numberAndPrice: emptyNumberAndPrice
         });
         return false;
     }
@@ -104,12 +106,7 @@ class UserArea extends React.Component {
 
     retrieveNumberAndPrice = (request) => {
         this.setState({
-            numberAndPrice: {
-                arrived: false,
-                isValid: false,
-                number: -1,
-                price: -1
-            }
+            numberAndPrice: emptyNumberAndPrice
         });
         return api.retrieveNumberAndPrice(request)
             .then((result) => {
@@ -169,36 +166,6 @@ class UserArea extends React.Component {
         </Switch>
     }
 
-}
-
-
-function NumberAndPrice(props) {
-    if (!props.numberAndPrice.arrived)
-        return null;
-    else {
-        if (!props.numberAndPrice.isValid || props.numberAndPrice.number === 0) {
-            return <Alert variant={"danger"}>
-                {!props.numberAndPrice.isValid ? "Oops! Something went wrong, try again later!"
-                    :
-                    "There are no cars available for the choosen period and category, try another rental period or change the category!"
-                }
-            </Alert>
-        } else if (props.numberAndPrice.isValid && props.numberAndPrice.number > 0)
-            return <><Alert variant={"success"}>{
-                props.numberAndPrice.number > 1 ?
-                    <Alert.Heading>{"There are only "}
-                        <strong>{props.numberAndPrice.number}</strong>{" cars available for the choosen period and category! " +
-                        "Book yours now for " + props.numberAndPrice.price.toFixed(2) + "€!"}</Alert.Heading>
-                    :
-                    <Alert.Heading><strong>Last</strong>{" car available for the choosen period and category! " +
-                    "Book it now for " + props.numberAndPrice.price.toFixed(2) + "€!"}</Alert.Heading>
-            }
-                <hr/>
-                <Button variant={"primary"} disabled={props.submittedForm} className={"d-flex justify-content-end"}
-                        onClick={() => props.submitRentalForm(true)}>Book your car!</Button>
-            </Alert>
-            </>
-    }
 }
 
 export default UserArea

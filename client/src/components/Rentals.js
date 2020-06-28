@@ -52,9 +52,13 @@ function Rentals(props) {
             });
     }, [])
 
+    /*
+    to offer a better user experience, future rentals (the ones not yet started or not finished)
+    are showed starting from the nearest one, while the previous ones are showed
+    starting from the most recent one
+     */
     const previous = rentals.filter(rental => moment(rental.dateout).isBefore(moment(), "day"))
         .sort((r1, r2) => r1.datein > r2.datein ? -1 : (r1.datein < r2.datein ? 1 : (r1.dateout < r2.dateout ? 1 : -1)));
-
     const future = rentals.filter(rental => moment(rental.dateout).isSameOrAfter(moment(), "day"))
         .sort((r1, r2) => -(r1.datein > r2.datein ? -1 : (r1.datein < r2.datein ? 1 : (r1.dateout < r2.dateout ? 1 : -1))));
 

@@ -49,9 +49,7 @@ function LoginForm(props) {
                                   type="password" placeholder="Password" value={props.password} required/>
                 </Col>
             </Form.Group>
-            <Button variant="primary" type="submit" block>
-                Login
-            </Button>
+            <Button variant="primary" type="submit" block>Login</Button>
         </Form>
         <Container id="underLogin">
             {(loading === true) ?

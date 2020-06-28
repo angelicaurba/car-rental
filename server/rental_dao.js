@@ -50,6 +50,21 @@ exports.deleteRental = (userid, rentalid) => {
     });
 }
 
+exports.getPreviousRentals = (id) => {
+    return new Promise((resolve, reject) => {
+        const sql = "SELECT COUNT(*) as number FROM rentals WHERE UserId = ? AND DateTo < ? ";
+        db.get(sql, [id, moment().format("yyyy-MM-DD")], (err, row) => {
+            console.log(row);
+            if (err)
+                reject(err);
+            else {
+                resolve(row.number);
+            }
+        });
+    });
+}
+
+/* just hode the complexity of the Rental's constructor call*/
 createRental = (request, vehicleid, userid, price) => {
     const rental = new Rental(request.datein, request.dateout, request.category, +request.age, +request.others, +request.kms, +request.insurance, vehicleid, userid, price);
     return rental;

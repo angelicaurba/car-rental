@@ -83,6 +83,13 @@ class Catalogue extends React.Component {
     }
 }
 
+/*
+the filtering operation takes into account the possibility of having empty filters
+in this case, all vehicles are showed; then, if the selected filters do not match any vehicle,
+a message is showed to inform the user;
+vehicles are sorted for brand's alphabetical order
+in order to have a more varied page
+ */
 function VehiclesList(props) {
     const vehicles = props.vehicles
         .filter(v => (props.cats.length === 0 || props.cats.indexOf(v.category) >= 0 ) && (props.brands.length === 0 || props.brands.indexOf(v.brand) >= 0))
@@ -108,6 +115,11 @@ function VehicleRow(props) {
         case "E": variant = "info"; break;
     }
 
+
+    /*
+    the showed price is only indicative, since it considers the optimal situation (for the user)
+     where the highest reduction is applied on the base price for that category
+     */
     return <ListGroup.Item className={"vehicleRow"}><Row >
         <Col sm={4}>
             <Image className={"img-fluid"} src={img} rounded thumbnail/>
@@ -123,6 +135,10 @@ function VehicleRow(props) {
     </Row></ListGroup.Item>;
 }
 
+/*
+used to retrieve the distinct names of the various brands
+in order to show them in the filtering checkboxes
+ */
 function distinctBrands(vehicles) {
     let res = [];
     vehicles.map(v => v.brand).forEach(brand => {

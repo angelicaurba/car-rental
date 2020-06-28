@@ -1,8 +1,6 @@
 import React from 'react';
-import {Alert, Button, Form, FormControl, FormGroup, FormLabel, Spinner} from "react-bootstrap";
+import {Alert, Button, Form, FormControl, FormGroup, FormLabel, Spinner, Col, Row} from "react-bootstrap";
 import moment from "moment";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
 import Cards from 'react-credit-cards';
 import 'react-credit-cards/es/styles-compiled.css';
 import {Link} from 'react-router-dom';
@@ -42,8 +40,9 @@ class Payment extends React.Component {
             if (pattern.test(this.state.paymentData.cvv) && this.state.paymentData.cvv.length === 3) //valid cvv
                 if (pattern.test(this.state.paymentData.month) && +this.state.paymentData.month >= 1 && +this.state.paymentData.month <= 12) //valid month
                     if (pattern.test(this.state.paymentData.year) && +this.state.paymentData.year >= (moment().year() - 2000)) //valid year
-                        if (pattern.test(this.state.paymentData.cvv) && this.state.paymentData.cvv.length === 3) //valid year
-                            return true;
+                        if (+this.state.paymentData.year > (moment().year() - 2000) || (+this.state.paymentData.year === moment().year() - 2000 && (+this.state.paymentData.month >= moment().month() + 1))) //expiration date is valid (moment().month() starts from 0 so the +1 is needed)
+                            if (pattern.test(this.state.paymentData.cvv) && this.state.paymentData.cvv.length === 3) //valid year
+                                return true;
         return false;
     }
 
@@ -61,7 +60,8 @@ class Payment extends React.Component {
             <Alert variant={"success"}>
                 <Alert.Heading>Booking executed successfully!</Alert.Heading>
                 <hr/>
-                <Link to={"/user/rentals/future"}><Button variant={"primary"} onClick={() => this.props.resetState()}>Check your rentals</Button> </Link>
+                <Link to={"/user/rentals/future"}><Button variant={"primary"} onClick={() => this.props.resetState()}>Check
+                    your rentals</Button> </Link>
             </Alert>
             :
             <Row>
@@ -73,6 +73,7 @@ class Payment extends React.Component {
                         focused={this.state.focused}
                         name={this.state.paymentData.name}
                         number={this.state.paymentData.number}
+
                     />
                 </Col>
                 <Col sm={12} md={6} className={"mt-2"}>
@@ -151,12 +152,12 @@ class Payment extends React.Component {
                             <Spinner animation="border" role="status" variant="secondary"/>
                             :
                             (this.props.submitted && !this.props.success) ?
-                            <Alert variant={"danger"}>
-                                <Alert.Heading>Something wrong in payment! Check your data or try again
-                                    later!</Alert.Heading>
-                            </Alert>
-                            :
-                             null}
+                                <Alert variant={"danger"}>
+                                    <Alert.Heading>Something wrong in payment! Check your data or try again
+                                        later!</Alert.Heading>
+                                </Alert>
+                                :
+                                null}
                     </Form>
                 </Col>
             </Row>

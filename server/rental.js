@@ -14,6 +14,13 @@ class Rental {
         this.price = +price;
     }
 
+    /*
+    this method's goal is to take a Rental object and transform it
+    in a slightly different one that is easier to manage from the front-end,
+    changing the range numbers of kms and age into meaningful strings,
+    and adding the RentalId (useful in case of delete)
+    and the vehicle fields (to be showed in the front-end)
+     */
     toDto = (vehicle, rentalid) => {
         let dto = {...this};
         const age = dto.age;
