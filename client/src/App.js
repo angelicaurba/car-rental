@@ -83,7 +83,7 @@ class App extends React.Component {
                                                                loggedIn={this.state.loggedIn}/>}/>
                     <Switch>
                         <Route exact path={"/login"} render={() => {
-                            if (this.state.loggedIn === false)
+                            if (this.state.loggedIn !== true)
                                 return <LoginForm login={this.login}
                                                   change={this.changeUserField} username={this.state.user.username}
                                                   password={this.state.user.password}/>;

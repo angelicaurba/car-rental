@@ -1,13 +1,13 @@
 import React from 'react';
 import {Link, useLocation} from 'react-router-dom';
 import {Button, Navbar, Image} from 'react-bootstrap';
-import { FaRegUser, FaCarSide, FaUserAltSlash } from 'react-icons/fa';
+import { FaRegUser, FaCarSide, FaUserAltSlash, FaShoppingCart } from 'react-icons/fa';
 import logo from "../car-rental.svg"
 
 function AppNavbar(props) {
         const location = useLocation();
 
-        return <Navbar className={"row"} bg="primary" expand="true">
+        return <Navbar sticky={"top"} className={"appNavbar row"} bg="primary" expand="true">
             <Link to={"/catalogue"} className={"col-5 col-md-3 row"}><Navbar.Brand className={"row"}>
                 <Image src={logo} className={"col-8 col-sm-6"} height={50} rounded/>
                 <span className={"col-5 d-sm-inline d-none"}>Rentals.com</span>
@@ -29,7 +29,7 @@ function AppNavbar(props) {
                     (location.pathname.includes("rentals") )|| (location.pathname.includes("catalogue") && props.loggedIn) ?
                         <Link to={"/user/newrental"} className={"col-6 col-lg-5"}>
                             <Button className={"row"} variant="outline-light">
-                                <FaCarSide className={"col-12"}/>
+                                <FaShoppingCart className={"col-12"}/>
                                 <span className={"col-12 d-sm-block d-none"}>Rent a car</span>
                             </Button>{" "}
                         </Link>

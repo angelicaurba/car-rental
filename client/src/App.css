@@ -94,3 +94,7 @@ body{
   background-color: ghostwhite;
 }
 
+a:hover {
+  text-decoration: none;
+}
+

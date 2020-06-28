@@ -1,6 +1,6 @@
 import React from 'react';
 import {Alert, Button, Container} from "react-bootstrap";
-import {Route, Switch} from 'react-router-dom';
+import {Route, Switch, Redirect} from 'react-router-dom';
 import RentalForm from './RentalForm';
 import Payment from './Payment';
 import Rentals from './Rentals.js'
@@ -8,26 +8,28 @@ import moment from 'moment';
 import NumberAndPriceRequest from "../api/NumberAndPriceRequest";
 import * as api from '../api/API';
 
+const emptyFormData = {
+    category: "-1",
+    datein: "",
+    dateout: "",
+    extradrivers: 0,
+    driverage: -1,
+    kms: -1,
+    extrainsurance: false
+};
+const emptyNumberAndPrice = {
+    arrived: false,
+    isValid: false,
+    number: -1,
+    price: -1
+};
 
 class UserArea extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            formData: {
-                category: "-1",
-                datein: "",
-                dateout: "",
-                extradrivers: 0,
-                driverage: -1,
-                kms: -1,
-                extrainsurance: false
-            }
-            , numberAndPrice: {
-                arrived: false,
-                isValid: false,
-                number: -1,
-                price: -1
-            },
+            formData: emptyFormData,
+            numberAndPrice: emptyNumberAndPrice,
             submittedForm: false,
             loadingForm: false,
             error: {
@@ -49,6 +51,19 @@ class UserArea extends React.Component {
 
     submitForm = (value) => {
         this.setState({submittedForm: value});
+    }
+
+    resetState = () => {
+        this.setState({formData: emptyFormData,
+            numberAndPrice: emptyNumberAndPrice,
+            submittedForm: false,
+            loadingForm: false,
+            error: {
+                isPresent: false,
+                message: ""
+            },
+            paymentSubmitted: false,
+            paymentSuccess: false});
     }
 
     checkValues = (datein, dateout, category, age, others, kms, insurance) => {
@@ -144,11 +159,13 @@ class UserArea extends React.Component {
                            <Payment submitRentalForm={this.submitForm}
                                     handlePayment={this.handlePayment}
                                     submitted={this.state.paymentSubmitted}
-                                    success={this.state.paymentSuccess}/>
+                                    success={this.state.paymentSuccess}
+                                    resetState={this.resetState}/>
                            :
                            null}
                    </Container>}/>
             <Route path={"/user/rentals/"} render={() => <Rentals setLoggedout={this.props.setLoggedout}/>}/>
+            <Route path={"/user/"} render={() => <Redirect to={"/catalogue"}/>}/>
         </Switch>
     }
 

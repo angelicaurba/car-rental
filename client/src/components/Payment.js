@@ -61,7 +61,7 @@ class Payment extends React.Component {
             <Alert variant={"success"}>
                 <Alert.Heading>Booking executed successfully!</Alert.Heading>
                 <hr/>
-                <Link to={"/user/rentals/future"}><Button variant={"primary"}>Check your rentals</Button> </Link>
+                <Link to={"/user/rentals/future"}><Button variant={"primary"} onClick={() => this.props.resetState()}>Check your rentals</Button> </Link>
             </Alert>
             :
             <Row>
