@@ -8,6 +8,7 @@ import {AiOutlineStop} from "react-icons/ai";
 import ModalHeader from "react-bootstrap/ModalHeader";
 
 function Rentals(props) {
+    const [loading, setLoading] = useState(false);
     const [rentals, setRentals] = useState([]);
     const [error, setError] = useState(false);
     const [rentalid, setRentalid] = useState(-1); //store the id of the rental to be deleted
@@ -33,10 +34,12 @@ function Rentals(props) {
     }, [confirm]);
 
     useEffect(() => {
+        setLoading(true);
         api.getRentals()
             .then((rentals) => {
                 setRentals(rentals);
                 setError(false);
+                setLoading(false);
             })
             .catch((error) => {
                 if (error.status === 401) {
@@ -44,12 +47,16 @@ function Rentals(props) {
                     props.setLoggedout();
                 } else {
                     setError(true);
+                    setLoading(false);
                 }
             });
     }, [])
 
-    const previous = rentals.filter(rental => moment(rental.dateout).isBefore(moment(), "day"));
-    const future = rentals.filter(rental => moment(rental.dateout).isSameOrAfter(moment(), "day"));
+    const previous = rentals.filter(rental => moment(rental.dateout).isBefore(moment(), "day"))
+        .sort((r1, r2) => r1.datein > r2.datein ? -1 : (r1.datein < r2.datein ? 1 : (r1.dateout < r2.dateout ? 1 : -1)));
+
+    const future = rentals.filter(rental => moment(rental.dateout).isSameOrAfter(moment(), "day"))
+        .sort((r1, r2) => -(r1.datein > r2.datein ? -1 : (r1.datein < r2.datein ? 1 : (r1.dateout < r2.dateout ? 1 : -1))));
 
     return <>
         <Row>
@@ -62,7 +69,7 @@ function Rentals(props) {
                         <Redirect to={"/user/rentals/future"}/>
                         :
                         <>
-                            <RentalList error={error} deleteRental={setRentalid}
+                            <RentalList loading={loading} error={error} deleteRental={setRentalid}
                                         rentals={match.params.when === "future" ? future : previous}/>
                             <Modal show={rentalid >= 0}
                                    onHide={() => {
@@ -90,7 +97,13 @@ function Rentals(props) {
 }
 
 function RentalList(props) {
-    return props.rentals.length === 0 ?
+    return props.loading ?
+        <Card className={"minHeight align-items-center d-flex justify-content-center"}><ListGroup>
+            <Alert variant={"secondary"} style={{width: '40vw', alignContent: "center"}}>
+                <Alert.Heading>{"Loading . . ."}</Alert.Heading>
+            </Alert></ListGroup></Card>
+        :
+    props.rentals.length === 0 ?
         <Card className={"minHeight align-items-center d-flex justify-content-center"}><ListGroup>
             <Alert variant={"secondary"} style={{width: '40vw', alignContent: "center"}}>
                 <Alert.Heading>{"There are no rentals in this section"}</Alert.Heading>
