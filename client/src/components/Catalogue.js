@@ -1,6 +1,7 @@
 import React from 'react';
 import {Col, Form, Image, ListGroup, Row, Card, Button, Alert} from "react-bootstrap";
-import {FaFilter} from 'react-icons/fa';
+import {FaFilter, FaCarSide} from 'react-icons/fa';
+import {TiArrowUnsorted} from 'react-icons/ti';
 import Badge from "react-bootstrap/Badge";
 
 
@@ -35,7 +36,7 @@ class Catalogue extends React.Component {
                     <Form.Group>
                         <FaFilter/> <strong> Filter your results for:</strong>
                     </Form.Group>
-                        <strong>Category:</strong>
+                        <TiArrowUnsorted/>{" "}<strong>Category:</strong>
                     <Row>
                         <Col xs={5} sm={5} md={6}>
                             <Form.Check label="A" type={'checkbox'} key={1} defaultChecked = {!this.state.first && this.state.cats.indexOf("A") >= 0} onChange={(event) => {this.changeState("cats", "A" );}}/>
@@ -48,7 +49,7 @@ class Catalogue extends React.Component {
                         </Col>
                     </Row>
                     {brands.length > 0 ?
-                        <><strong>Brand:</strong>
+                        <><FaCarSide/>{" "}<strong>Brand:</strong>
                         <Row>
                             <Col xs={5} sm={5} md={6}>
                                 {brands.filter((b, index) => index <= brands.length/2)
@@ -84,12 +85,13 @@ class Catalogue extends React.Component {
 
 function VehiclesList(props) {
     const vehicles = props.vehicles
-        .filter(v => (props.cats.length === 0 || props.cats.indexOf(v.category) >= 0 ) && (props.brands.length === 0 || props.brands.indexOf(v.brand) >= 0));
+        .filter(v => (props.cats.length === 0 || props.cats.indexOf(v.category) >= 0 ) && (props.brands.length === 0 || props.brands.indexOf(v.brand) >= 0))
+        .sort((v1, v2) => v1.brand > v2.brand ? 1 : -1 );
 
     if(vehicles.length === 0)
         return <Card className={"minHeight align-items-center d-flex justify-content-center"}><ListGroup>
             <Alert variant={"secondary"} style={{width: '40vw', alignContent: "center"}}>
-                <Alert.Heading>{"Sorry! There are no available cars for the selected filters!"}</Alert.Heading>
+                <Alert.Heading>{"There are no available cars for the selected filters!"}</Alert.Heading>
             </Alert></ListGroup></Card>
     return vehicles.map(v => <VehicleRow key={v.id} vehicle={v}/>);
 }
