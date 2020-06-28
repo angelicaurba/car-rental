@@ -33,7 +33,7 @@
 
 The following REST APIs are allowed only from an authenticated user. If he/she is not authenicated (either because the token was never signed or because it expired), they return a response with 401 as status code and containing an object that describes the error.
 
-- POST `/api/vehicles/request`
+- GET `/api/vehicles/request`
   - request parameters: query parameters containing all the parameters set in the rentalForm
   - request body: none
   - response body: an object containing the number of available vehicles and the price basing on the received parameters if they are valid, otherwise an error message
@@ -71,11 +71,11 @@ The following REST APIs are allowed only from an authenticated user. If he/she i
 ## Main React Components
 
 - `App` (in `App.js`): it is the main component, it manages the routes of the application; on mount retrieves from the db all the vehicles (and keeps them in the a state variable ) and calls the tryLogin API to check if the user was already authenticated.
-  -  `AppNavbar` (in `AppNavbar.js` ): it is the navbar of the application, it is showed whatever is the path with some differencies based on the path itself and on the fact that the user is authenticated or not. It can contain the Links to go to the  `/catalogue` page (the link is the logo), to the  `/user/rentals` or to the  `/user/newrental` pages, and to go to the  `/login` page or to perform the logout.  
+  -  `AppNavbar` (in `AppNavbar.js` ): it is the navbar of the application, it is showed whatever is the path with some differencies based on the path itself and on the fact that the user is authenticated or not. It can contain the Links to go to the  `/catalogue` page (the link is the logo), to the  `/user/rentals`(future or past) or to the  `/user/newrental` pages, and to go to the  `/login` page or to perform the logout.  
   -  `LoginForm` (in `LoginForm.js` ): it is the component that manages the login. It contains the form and does some front-end validation before submitting it to the server
   -  `Catalogue` (in `Catalogue.js` ): it is the component showed in the `/catalogue` page. Its goal is to show all the available vehicles to the user (authenticated or not) and give him/her the possibility to filter the results basing on brand and/or category. Contains the form with checkboxes to select the categories/brands (at mount they are all unchecked). The vehicles to show are received as props
      -  `VehiclesList` (in `Catalogue.js` ): receive the vehicles and the filters as property, filters the vehicles and renders them in VehiclesRow.
-        -  `VehiclesRow` (in `Catalogue.js` ): shows the vehicle's informations. Also a price is showed that is only indicative, since it considers the optimal situation (for the user) where the highest reduction is applied on the base price for that category. The real price will be showed only when filling in the rental form
+        -  `VehiclesRow` (in `Catalogue.js` ): shows the vehicle's informations. Also a price is showed but it is only indicative, since it considers the optimal situation (for the user) where the highest reduction is applied on the base price for that category. The real price will be showed only when filling in the rental form
   - `UserArea` (in `UserArea.js` ): it is the component that is dedicated to the reserved area of an authenticated user. It manages the rental form, the check on data and its submission, the payment submission, the api call to retrieve number and price of available vehicles. It manages also the routes for the `/user/newrental` and the `user/rentals/future` or `/user/rentals/past` routes.
     - `RentalForm` (in `RentalForm.js` ): contains the rental form, manages some front-end validation on data (also done by the UserArea component before submitting data)
     - `Payment` (in `Payment.js` ): contains and manages the payment form; it uses an external component `Cards` from the `react-credit-cards` library to show a card filled in with the fields inserted in the form

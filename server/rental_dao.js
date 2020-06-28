@@ -54,7 +54,6 @@ exports.getPreviousRentals = (id) => {
     return new Promise((resolve, reject) => {
         const sql = "SELECT COUNT(*) as number FROM rentals WHERE UserId = ? AND DateTo < ? ";
         db.get(sql, [id, moment().format("yyyy-MM-DD")], (err, row) => {
-            console.log(row);
             if (err)
                 reject(err);
             else {
