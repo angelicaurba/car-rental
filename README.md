@@ -1,5 +1,29 @@
-# Exam #1: "Car Rental"
-## Student: s271114 URBANELLI ANGELICA 
+# Car Rental - URBANELLI ANGELICA
+## Exam project of Web Application I course
+
+The application's requirement are explained in the Requirements.pdf file.
+
+To run the application the instructions are the following :
+  - firstly launch the server:
+    - `cd server`
+    - `npm install`
+    - `npm install -g nodemon` ( if not yet installed )
+    - `nodemon`
+ - then, in another terminal, launch the client
+    - `cd client`
+    - `npm install`
+    - `npm start`
+    
+ this will start a web application in developement mode.
+ 
+ ## Test users
+|Username | Password | Frequent customer|
+|-|-|-|
+|angelica| test| no |
+|johnny| apassword| no |
+|nancy| nancypwd |yes |
+|jody| curtis89|no|
+|cam| camille.moss|yes|
 
 ## React client application routes
 - Route  `/` or any invalid route: redirects to `/catalogue` 
@@ -67,6 +91,9 @@ The following REST APIs are allowed only from an authenticated user. If he/she i
   | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
 
   (AgeDriver and Kilometers are integer from 1 to 3 that indicate the range to which they belong to)
+ 
+## Tip
+In order to test the surplus of 10% in a rental price due to a number of available vehicles less than 10% of the ones for a certain category, in the period from 2020-08-01 to 2020-08-10 all the vehicles except one has been rented.
 
 ## Main React Components
 
@@ -84,19 +111,9 @@ The following REST APIs are allowed only from an authenticated user. If he/she i
       - `Sidebar` (in `Rentals.js` ): manages the links for the two possible routes (future/past)
       - `RentalList` (in `Rentals.js` ): receives the proper list of rentals and shows them or shows a message if an error occurrs or there are no rentals in that section
         - `RentalRow` (in `Rentals.js` ): shows the rental parameters
+        
 
 ## Screenshot
 
 ![Configurator Screenshot](./img/screenshot.jpg)
 ![Configurator Screenshot2](./img/screenshot2.jpg)
-
-## Test users
-
-* angelica, test
-* johnny, apassword
-* nancy, nancypwd (frequent customer)
-* jody, curtis89
-* cam, camille.moss (frequent customer)
-
-
-in order to test the surplus of 10% in a rental price due to a number of available vehicles less than 10% of the ones for a certain category, in the period from 2020-08-01 to 2020-08-10 all the vehicles except one has been rented.
