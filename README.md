@@ -17,13 +17,15 @@ To run the application the instructions are the following :
  this will start a web application in developement mode.
  
  ## Test users
-|Username | Password | Frequent customer|
+|Username | Password | Frequent customer (*) |
 |-|-|-|
 |angelica| test| no |
 |johnny| apassword| no |
 |nancy| nancypwd |yes |
 |jody| curtis89|no|
 |cam| camille.moss|yes|
+
+(*) means a customer that in the past has rented at least 3 vehicles 
 
 ## React client application routes
 - Route  `/` or any invalid route: redirects to `/catalogue` 
@@ -90,7 +92,15 @@ The following REST APIs are allowed only from an authenticated user. If he/she i
   |RentalId | VehicleId | UserId | DateFrom | DateTo | AgeDriver | OtherDrivers | Kilometers | Insurance | Price |
   | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | 
 
-  (AgeDriver and Kilometers are integer from 1 to 3 that indicate the range to which they belong to)
+  AgeDriver and Kilometers are integer from 1 to 3 that indicate the range they belong to, in particular:
+  - for AgeDriver
+    * 1 : 18 - 24
+    * 2 : 25 - 64
+    * 3 : 65 and more
+  - for Kilometers
+    * 1 : 0 - 49 kms/day
+    * 2 : 50 - 149 kms/day
+    * 3 : Unlimited
  
 ## Tip
 In order to test the surplus of 10% in a rental price due to a number of available vehicles less than 10% of the ones for a certain category, in the period from 2020-08-01 to 2020-08-10 all the vehicles except one has been rented.
